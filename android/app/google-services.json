@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "974701337498",
+    "project_id": "blackbox-87e24",
+    "storage_bucket": "blackbox-87e24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974701337498:android:f15a62e883e1288a1db823",
+        "android_client_info": {
+          "package_name": "com.mycompany.blackbox"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDL3xdYkudiarsfyo2lBRj91lT5_YI-YdE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
