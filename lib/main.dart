@@ -29,7 +29,7 @@ void main() async {
 
   // Start final custom actions code
   await actions.lockOrientation();
-  await actions.onesignalInitialise();
+  // await actions.onesignalInitialise();
   // End final custom actions code
 
   runApp(ChangeNotifierProvider(

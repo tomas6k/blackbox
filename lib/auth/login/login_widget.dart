@@ -363,9 +363,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                           }
                                         }
 
-                                        await actions.onesignalLogin(
-                                          currentUserUid,
-                                        );
+                                        // await actions.onesignalLogin(
+                                        //   currentUserUid,
+                                        // );
 
                                         safeSetState(() {});
                                       },

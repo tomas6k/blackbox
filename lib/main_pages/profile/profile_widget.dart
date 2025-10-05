@@ -171,7 +171,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   FFAppState().roleSetup = '';
 
                   safeSetState(() {});
-                  await actions.onesignalLogout();
+                  // await actions.onesignalLogout();
                   GoRouter.of(context).prepareAuthEvent();
                   await authManager.signOut();
                   GoRouter.of(context).clearRedirectLocation();

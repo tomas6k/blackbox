@@ -1,0 +1,36 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.melos_tool/
+.pub-cache/
+
+# Build outputs
+build/
+android/app/build/
+ios/Flutter/ephemeral/
+
+# IntelliJ/VS Code
+.idea/
+.vscode/
+*.iml
+
+# Xcode
+DerivedData/
+*.xcscmblueprint
+*.xccheckout
+
+# macOS
+.DS_Store
+
+# Fastlane
+fastlane/README.md
+deleteme.csv
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Others
+AGENTS.md
