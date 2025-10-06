@@ -17,6 +17,8 @@ class HomeModel extends FlutterFlowModel<HomeWidget> {
   late ButtonHeaderModel buttonHeaderModel2;
   // Model for buttonHeader component.
   late ButtonHeaderModel buttonHeaderModel3;
+  // Model for buttonHeader component.
+  late ButtonHeaderModel buttonHeaderModel4;
   bool apiRequestCompleted1 = false;
   String? apiRequestLastUniqueKey1;
   bool requestCompleted1 = false;
@@ -37,6 +39,7 @@ class HomeModel extends FlutterFlowModel<HomeWidget> {
     buttonHeaderModel1 = createModel(context, () => ButtonHeaderModel());
     buttonHeaderModel2 = createModel(context, () => ButtonHeaderModel());
     buttonHeaderModel3 = createModel(context, () => ButtonHeaderModel());
+    buttonHeaderModel4 = createModel(context, () => ButtonHeaderModel());
     itemTransactionModel1 = createModel(context, () => ItemTransactionModel());
   }
 
@@ -45,6 +48,7 @@ class HomeModel extends FlutterFlowModel<HomeWidget> {
     buttonHeaderModel1.dispose();
     buttonHeaderModel2.dispose();
     buttonHeaderModel3.dispose();
+    buttonHeaderModel4.dispose();
     itemTransactionModel1.dispose();
   }
 

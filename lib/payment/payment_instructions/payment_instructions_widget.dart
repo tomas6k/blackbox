@@ -19,6 +19,77 @@ class _PaymentInstructionsWidgetState extends State<PaymentInstructionsWidget> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   static const _iban = 'FR76 1759 8000 0100 0311 8649 544';
 
+  Widget _ribInfoTile(
+    BuildContext context, {
+    required String label,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: FlutterFlowTheme.of(context).labelLarge.override(
+                        fontFamily: 'Manrope',
+                        letterSpacing: 0.0,
+                        color: FlutterFlowTheme.of(context).secondaryText,
+                      ),
+                ),
+                const SizedBox(height: 4.0),
+                SelectableText(
+                  value,
+                  style: FlutterFlowTheme.of(context).titleSmall.override(
+                        fontFamily: 'Manrope',
+                        letterSpacing: 0.0,
+                        fontWeight: FontWeight.w700,
+                        color: FlutterFlowTheme.of(context).primaryText,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          FlutterFlowIconButton(
+            borderColor: Colors.transparent,
+            borderRadius: 20.0,
+            borderWidth: 1.0,
+            buttonSize: 40.0,
+            icon: Icon(
+              Icons.copy_rounded,
+              color: FlutterFlowTheme.of(context).primary,
+              size: 20.0,
+            ),
+            onPressed: () async {
+              await Clipboard.setData(ClipboardData(text: value));
+              if (!mounted) {
+                return;
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Copié dans le presse-papier',
+                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                          fontFamily: 'Manrope',
+                          letterSpacing: 0.0,
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                        ),
+                  ),
+                  duration: const Duration(seconds: 2),
+                  backgroundColor: FlutterFlowTheme.of(context).primary,
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
@@ -87,83 +158,38 @@ class _PaymentInstructionsWidgetState extends State<PaymentInstructionsWidget> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: FlutterFlowTheme.of(context).secondaryBackground,
-                    borderRadius: BorderRadius.circular(12.0),
+                    borderRadius: BorderRadius.circular(16.0),
                     border: Border.all(
-                      color: FlutterFlowTheme.of(context).primary,
+                      color: FlutterFlowTheme.of(context)
+                          .primary
+                          .withOpacity(0.08),
                     ),
                   ),
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      Text(
-                        'IBAN à copier :',
-                        style: FlutterFlowTheme.of(context).labelLarge.override(
-                              fontFamily: 'Manrope',
-                              letterSpacing: 0.0,
-                            ),
+                      _ribInfoTile(
+                        context,
+                        label: 'Titulaire du compte',
+                        value: 'Arnaud GORGERIN',
                       ),
-                      const SizedBox(height: 12.0),
-                      SelectableText(
-                        _iban,
-                        style:
-                            FlutterFlowTheme.of(context).titleMedium.override(
-                                  fontFamily: 'Manrope',
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                      _ribInfoTile(
+                        context,
+                        label: 'IBAN',
+                        value: _iban,
                       ),
-                      const SizedBox(height: 16.0),
-                      FFButtonWidget(
-                        onPressed: () async {
-                          await Clipboard.setData(
-                              const ClipboardData(text: _iban));
-                          if (!mounted) {
-                            return;
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'IBAN copié dans le presse-papier',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Manrope',
-                                      letterSpacing: 0.0,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBackground,
-                                    ),
-                              ),
-                              duration: const Duration(seconds: 2),
-                              backgroundColor:
-                                  FlutterFlowTheme.of(context).primary,
-                            ),
-                          );
-                        },
-                        text: 'Copier l\'IBAN',
-                        options: FFButtonOptions(
-                          width: double.infinity,
-                          height: 44.0,
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              24.0, 0.0, 24.0, 0.0),
-                          iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                              0.0, 0.0, 0.0, 0.0),
-                          color: FlutterFlowTheme.of(context).primary,
-                          textStyle:
-                              FlutterFlowTheme.of(context).titleSmall.override(
-                                    fontFamily: 'Manrope',
-                                    letterSpacing: 0.0,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                          elevation: 0.0,
-                          borderSide: const BorderSide(
-                            color: Colors.transparent,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
+                      _ribInfoTile(
+                        context,
+                        label: 'BIC',
+                        value: 'LYDIFRP2XXX',
                       ),
-                    ],
+                      _ribInfoTile(
+                        context,
+                        label: 'N° de compte',
+                        value: '00031186495',
+                      ),
+                    ].divide(const SizedBox(height: 12.0)),
                   ),
                 ),
                 const SizedBox(height: 24.0),

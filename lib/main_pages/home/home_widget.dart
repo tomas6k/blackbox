@@ -588,6 +588,29 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed('paymentInstructions');
+                              },
+                              child: wrapWithModel(
+                                model: _model.buttonHeaderModel4,
+                                updateCallback: () => safeSetState(() {}),
+                                child: ButtonHeaderWidget(
+                                  text: 'Voir le RIB',
+                                  icon: FaIcon(
+                                    FontAwesomeIcons.moneyCheckDollar,
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryTextInverse,
+                                    size: 24.0,
+                                  ),
+                                  count: false,
+                                ),
+                              ),
+                            ),
                             if ((FFAppState().roleSetup == 'owner') ||
                                 (FFAppState().roleSetup == 'admin'))
                               InkWell(
