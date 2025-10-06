@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 
 import '/backend/schema/structs/index.dart';
 
-
 import '/auth/base_auth_user_provider.dart';
 
 import '/index.dart';
@@ -75,21 +74,24 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       initialLocation: '/',
       debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
-      errorBuilder: (context, state) =>
-          appStateNotifier.loggedIn ? const NavBarPage() : const CreateAccountWidget(),
+      errorBuilder: (context, state) => appStateNotifier.loggedIn
+          ? const NavBarPage()
+          : const CreateAccountWidget(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
-          builder: (context, _) =>
-              appStateNotifier.loggedIn ? const NavBarPage() : const CreateAccountWidget(),
+          builder: (context, _) => appStateNotifier.loggedIn
+              ? const NavBarPage()
+              : const CreateAccountWidget(),
         ),
         FFRoute(
           name: 'Home',
           path: '/home',
           requireAuth: true,
-          builder: (context, params) =>
-              params.isEmpty ? const NavBarPage(initialPage: 'Home') : const HomeWidget(),
+          builder: (context, params) => params.isEmpty
+              ? const NavBarPage(initialPage: 'Home')
+              : const HomeWidget(),
         ),
         FFRoute(
           name: 'joinTeam',
@@ -104,11 +106,18 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const PaymentWidget(),
         ),
         FFRoute(
+          name: 'paymentInstructions',
+          path: '/paymentInstructions',
+          requireAuth: true,
+          builder: (context, params) => const PaymentInstructionsWidget(),
+        ),
+        FFRoute(
           name: 'Team',
           path: '/team',
           requireAuth: true,
-          builder: (context, params) =>
-              params.isEmpty ? const NavBarPage(initialPage: 'Team') : const TeamWidget(),
+          builder: (context, params) => params.isEmpty
+              ? const NavBarPage(initialPage: 'Team')
+              : const TeamWidget(),
         ),
         FFRoute(
           name: 'Profile',
@@ -407,7 +416,8 @@ class TransitionInfo {
   final Duration duration;
   final Alignment? alignment;
 
-  static TransitionInfo appDefault() => const TransitionInfo(hasTransition: false);
+  static TransitionInfo appDefault() =>
+      const TransitionInfo(hasTransition: false);
 }
 
 class RootPageContext {

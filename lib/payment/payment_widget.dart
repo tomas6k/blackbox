@@ -250,8 +250,8 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                          16.0, 0.0, 16.0, 0.0),
                       child: FFButtonWidget(
                         onPressed: ((_model.paimentTextController.text ==
                                     '0') ||
@@ -271,8 +271,7 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                                           _model.paimentTextController.text),
                                   'created_by': FFAppState().userSetup,
                                   'transaction_to': FFAppState().userSetup,
-                                  'penalitie_id':
-                                      _model.penalitiePay?.first.id,
+                                  'penalitie_id': _model.penalitiePay?.first.id,
                                   'saison_id': FFAppState().saisonSetup,
                                   'statut': 2.0,
                                 });
@@ -280,10 +279,10 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                                 FFAppState().clearDashboardTransactionCache();
                                 FFAppState().clearPaymentPendingCache();
 
-                                context.goNamed('Home');
-
-                                await launchURL(
-                                    'https://lydia-app.com/pots?id=10845-blackboxvlhb');
+                                context.pushNamedAuth(
+                                  'paymentInstructions',
+                                  context.mounted,
+                                );
 
                                 safeSetState(() {});
                               },
@@ -314,14 +313,16 @@ class _PaymentWidgetState extends State<PaymentWidget> {
                       ),
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                          16.0, 0.0, 16.0, 0.0),
                       child: FFButtonWidget(
                         onPressed: () async {
-                          await launchURL(
-                              'https://lydia-app.com/pots?id=10845-blackboxvlhb');
+                          context.pushNamedAuth(
+                            'paymentInstructions',
+                            context.mounted,
+                          );
                         },
-                        text: 'Aller vers la cagnotte',
+                        text: 'Voir les moyens de paiements',
                         options: FFButtonOptions(
                           width: MediaQuery.sizeOf(context).width * 1.0,
                           height: 48.0,

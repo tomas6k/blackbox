@@ -15,3 +15,5 @@ export '/main_pages/activity/activity_widget.dart' show ActivityWidget;
 export '/my_transactions/my_transactions_widget.dart' show MyTransactionsWidget;
 export '/modify_transaction/modify_transaction_widget.dart'
     show ModifyTransactionWidget;
+export '/payment/payment_instructions/payment_instructions_widget.dart'
+    show PaymentInstructionsWidget;

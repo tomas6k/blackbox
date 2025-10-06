@@ -148,7 +148,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 40.0, 0.0, 0.0),
+                  padding:
+                      const EdgeInsetsDirectional.fromSTEB(0.0, 40.0, 0.0, 0.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -204,9 +205,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                               BorderRadius.circular(9999.0),
                                         ),
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  8.0, 4.0, 16.0, 4.0),
+                                          padding: const EdgeInsetsDirectional
+                                              .fromSTEB(8.0, 4.0, 16.0, 4.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             mainAxisAlignment:
@@ -219,10 +219,12 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                     BorderRadius.circular(
                                                         9999.0),
                                                 child: CachedNetworkImage(
-                                                  fadeInDuration: const Duration(
-                                                      milliseconds: 500),
-                                                  fadeOutDuration: const Duration(
-                                                      milliseconds: 500),
+                                                  fadeInDuration:
+                                                      const Duration(
+                                                          milliseconds: 500),
+                                                  fadeOutDuration:
+                                                      const Duration(
+                                                          milliseconds: 500),
                                                   imageUrl:
                                                       valueOrDefault<String>(
                                                     getJsonField(
@@ -353,8 +355,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                         0.0,
                                                                   ),
                                                             ),
-                                                          ].divide(const SizedBox(
-                                                              width: 4.0)),
+                                                          ].divide(
+                                                              const SizedBox(
+                                                                  width: 4.0)),
                                                         ),
                                                       ].divide(const SizedBox(
                                                           width: 12.0)),
@@ -362,7 +365,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                   ),
                                                 ],
                                               ),
-                                            ].divide(const SizedBox(width: 8.0)),
+                                            ].divide(
+                                                const SizedBox(width: 8.0)),
                                           ),
                                         ),
                                       ),
@@ -406,8 +410,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                   mainAxisSize: MainAxisSize.max,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          20.0, 0.0, 20.0, 0.0),
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              20.0, 0.0, 20.0, 0.0),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.max,
                                         mainAxisAlignment:
@@ -442,8 +447,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          20.0, 0.0, 20.0, 0.0),
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              20.0, 0.0, 20.0, 0.0),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.max,
                                         mainAxisAlignment:
@@ -524,7 +530,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                               .primaryText,
                                         ),
                                       ),
-                                      duration: const Duration(milliseconds: 4000),
+                                      duration:
+                                          const Duration(milliseconds: 4000),
                                       backgroundColor:
                                           FlutterFlowTheme.of(context).warning,
                                     ),
@@ -592,7 +599,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                   context.pushNamed('paymentPending');
                                 },
                                 child: Stack(
-                                  alignment: const AlignmentDirectional(0.7, -1.1),
+                                  alignment:
+                                      const AlignmentDirectional(0.7, -1.1),
                                   children: [
                                     wrapWithModel(
                                       model: _model.buttonHeaderModel3,
@@ -657,7 +665,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                           ),
                                           child: Visibility(
                                             visible:
-                                                transactionsPaymentPendingTransactionsRowList.isNotEmpty,
+                                                transactionsPaymentPendingTransactionsRowList
+                                                    .isNotEmpty,
                                             child: ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(99.0),
@@ -714,7 +723,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
             ),
             Flexible(
               child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 0.0),
+                padding:
+                    const EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 0.0),
                 child: RefreshIndicator(
                   color: FlutterFlowTheme.of(context).primary,
                   onRefresh: () async {
@@ -813,8 +823,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                   return Container(
                                     decoration: const BoxDecoration(),
                                     child: Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 16.0, 0.0, 0.0),
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              0.0, 16.0, 0.0, 0.0),
                                       child: Container(
                                         decoration: BoxDecoration(
                                           color: FlutterFlowTheme.of(context)
@@ -830,8 +841,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsetsDirectional
-                                                    .fromSTEB(
+                                                padding:
+                                                    const EdgeInsetsDirectional
+                                                        .fromSTEB(
                                                         12.0, 12.0, 12.0, 0.0),
                                                 child: Column(
                                                   mainAxisSize:
@@ -868,8 +880,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                     0.0,
                                                               ),
                                                     ),
-                                                  ].divide(
-                                                      const SizedBox(height: 4.0)),
+                                                  ].divide(const SizedBox(
+                                                      height: 4.0)),
                                                 ),
                                               ),
                                               ListView(
@@ -927,10 +939,10 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                         padding:
                                                             const EdgeInsetsDirectional
                                                                 .fromSTEB(
-                                                                    12.0,
-                                                                    8.0,
-                                                                    12.0,
-                                                                    12.0),
+                                                                12.0,
+                                                                8.0,
+                                                                12.0,
+                                                                12.0),
                                                         child: Row(
                                                           mainAxisSize:
                                                               MainAxisSize.max,
@@ -938,60 +950,6 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                               MainAxisAlignment
                                                                   .center,
                                                           children: [
-                                                            Expanded(
-                                                              child:
-                                                                  FFButtonWidget(
-                                                                onPressed:
-                                                                    () async {
-                                                                  await launchURL(
-                                                                      'https://lydia-app.com/pots?id=10845-blackboxvlhb');
-                                                                },
-                                                                text:
-                                                                    'Continuer',
-                                                                options:
-                                                                    FFButtonOptions(
-                                                                  height: 40.0,
-                                                                  padding: const EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          24.0,
-                                                                          0.0,
-                                                                          24.0,
-                                                                          0.0),
-                                                                  iconPadding: const EdgeInsetsDirectional
-                                                                      .fromSTEB(
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0,
-                                                                          0.0),
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primary,
-                                                                  textStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleSmall
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Manrope',
-                                                                        color: FlutterFlowTheme.of(context)
-                                                                            .primaryTextInverse,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                  elevation:
-                                                                      0.0,
-                                                                  borderSide:
-                                                                      const BorderSide(
-                                                                    color: Colors
-                                                                        .transparent,
-                                                                    width: 0.0,
-                                                                  ),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              16.0),
-                                                                ),
-                                                              ),
-                                                            ),
                                                             Expanded(
                                                               child:
                                                                   FFButtonWidget(
@@ -1031,18 +989,21 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                   await _model
                                                                       .waitForRequestCompleted3();
                                                                 },
-                                                                text: 'Annuler',
+                                                                text:
+                                                                    'Annuler mon paiement',
                                                                 options:
                                                                     FFButtonOptions(
                                                                   height: 40.0,
-                                                                  padding: const EdgeInsetsDirectional
-                                                                      .fromSTEB(
+                                                                  padding:
+                                                                      const EdgeInsetsDirectional
+                                                                          .fromSTEB(
                                                                           24.0,
                                                                           0.0,
                                                                           24.0,
                                                                           0.0),
-                                                                  iconPadding: const EdgeInsetsDirectional
-                                                                      .fromSTEB(
+                                                                  iconPadding:
+                                                                      const EdgeInsetsDirectional
+                                                                          .fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           0.0,
@@ -1076,14 +1037,15 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                 ),
                                                               ),
                                                             ),
-                                                          ].divide(const SizedBox(
-                                                              width: 12.0)),
+                                                          ].divide(
+                                                              const SizedBox(
+                                                                  width: 12.0)),
                                                         ),
                                                       ),
                                                     ],
                                                   ),
-                                                ].divide(
-                                                    const SizedBox(height: 12.0)),
+                                                ].divide(const SizedBox(
+                                                    height: 12.0)),
                                               ),
                                             ],
                                           ),
@@ -1291,9 +1253,10 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                     .primaryText,
                                                               ),
                                                             ),
-                                                            duration: const Duration(
-                                                                milliseconds:
-                                                                    4000),
+                                                            duration:
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        4000),
                                                             backgroundColor:
                                                                 FlutterFlowTheme.of(
                                                                         context)
@@ -1371,18 +1334,12 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                         height: 40.0,
                                                         padding:
                                                             const EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                                    24.0,
-                                                                    0.0,
-                                                                    24.0,
-                                                                    0.0),
+                                                                .fromSTEB(24.0,
+                                                                0.0, 24.0, 0.0),
                                                         iconPadding:
                                                             const EdgeInsetsDirectional
-                                                                .fromSTEB(
-                                                                    0.0,
-                                                                    0.0,
-                                                                    0.0,
-                                                                    0.0),
+                                                                .fromSTEB(0.0,
+                                                                0.0, 0.0, 0.0),
                                                         color:
                                                             Colors.transparent,
                                                         textStyle:
@@ -1399,7 +1356,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                       0.0,
                                                                 ),
                                                         elevation: 0.0,
-                                                        borderSide: const BorderSide(
+                                                        borderSide:
+                                                            const BorderSide(
                                                           color: Colors
                                                               .transparent,
                                                           width: 0.0,
