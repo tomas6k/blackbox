@@ -101,7 +101,8 @@ class _BottomSheetTransactionWidgetState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 0.0),
+                padding:
+                    const EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 0.0),
                 child: Container(
                   width: MediaQuery.sizeOf(context).width * 1.0,
                   decoration: BoxDecoration(
@@ -294,7 +295,8 @@ class _BottomSheetTransactionWidgetState
                 false,
               ))
                 Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 32.0, 0.0, 0.0),
+                  padding:
+                      const EdgeInsetsDirectional.fromSTEB(0.0, 32.0, 0.0, 0.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -305,13 +307,17 @@ class _BottomSheetTransactionWidgetState
                         hoverColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () async {
+                          final navigator = Navigator.of(context);
                           await TransactionsTable().delete(
                             matchingRows: (rows) => rows.eq(
                               'id',
                               widget.id,
                             ),
                           );
-                          Navigator.pop(context, true);
+                          if (!mounted) {
+                            return;
+                          }
+                          navigator.pop(true);
                         },
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -327,7 +333,7 @@ class _BottomSheetTransactionWidgetState
                               child: Align(
                                 alignment: const AlignmentDirectional(0.0, 0.0),
                                 child: FaIcon(
-                                  FontAwesomeIcons.trashAlt,
+                                  FontAwesomeIcons.trashCan,
                                   color: FlutterFlowTheme.of(context).error,
                                   size: 24.0,
                                 ),

@@ -5,7 +5,6 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'join_team_model.dart';
 export 'join_team_model.dart';
 
@@ -90,7 +89,8 @@ class _JoinTeamWidgetState extends State<JoinTeamWidget> {
         body: SafeArea(
           top: true,
           child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(20.0, 48.0, 20.0, 24.0),
+            padding:
+                const EdgeInsetsDirectional.fromSTEB(20.0, 48.0, 20.0, 24.0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,8 +99,8 @@ class _JoinTeamWidgetState extends State<JoinTeamWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Padding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 16.0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                          0.0, 0.0, 0.0, 16.0),
                       child: SizedBox(
                         width: double.infinity,
                         child: TextFormField(
@@ -148,8 +148,9 @@ class _JoinTeamWidgetState extends State<JoinTeamWidget> {
                             filled: true,
                             fillColor: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
-                            contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                                24.0, 24.0, 0.0, 24.0),
+                            contentPadding:
+                                const EdgeInsetsDirectional.fromSTEB(
+                                    24.0, 24.0, 0.0, 24.0),
                           ),
                           style:
                               FlutterFlowTheme.of(context).bodyLarge.override(
@@ -215,8 +216,9 @@ class _JoinTeamWidgetState extends State<JoinTeamWidget> {
                                 filled: true,
                                 fillColor: FlutterFlowTheme.of(context)
                                     .secondaryBackground,
-                                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    24.0, 24.0, 0.0, 24.0),
+                                contentPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        24.0, 24.0, 0.0, 24.0),
                               ),
                               style: FlutterFlowTheme.of(context)
                                   .bodyLarge
@@ -323,10 +325,10 @@ class _JoinTeamWidgetState extends State<JoinTeamWidget> {
                   options: FFButtonOptions(
                     width: double.infinity,
                     height: 56.0,
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
-                    iconPadding:
-                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        24.0, 0.0, 24.0, 0.0),
+                    iconPadding: const EdgeInsetsDirectional.fromSTEB(
+                        0.0, 0.0, 0.0, 0.0),
                     color: FlutterFlowTheme.of(context).primary,
                     textStyle:
                         FlutterFlowTheme.of(context).titleMedium.override(

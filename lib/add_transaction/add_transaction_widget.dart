@@ -95,22 +95,25 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                 ),
           ),
           actions: [
-            Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
-              child: FlutterFlowIconButton(
-                borderRadius: 8.0,
-                borderWidth: 0.0,
-                buttonSize: 40.0,
-                icon: Icon(
-                  Icons.payments,
-                  color: FlutterFlowTheme.of(context).primary,
-                  size: 24.0,
+            if ((FFAppState().roleSetup == 'admin') ||
+                (FFAppState().roleSetup == 'owner'))
+              Padding(
+                padding:
+                    const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+                child: FlutterFlowIconButton(
+                  borderRadius: 8.0,
+                  borderWidth: 0.0,
+                  buttonSize: 40.0,
+                  icon: Icon(
+                    Icons.payments,
+                    color: FlutterFlowTheme.of(context).primary,
+                    size: 24.0,
+                  ),
+                  onPressed: () async {
+                    context.pushNamed('addTransactionPayment');
+                  },
                 ),
-                onPressed: () {
-                  print('IconButton pressed ...');
-                },
               ),
-            ),
           ],
           centerTitle: true,
           elevation: 0.0,
@@ -121,14 +124,15 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
             key: _model.formKey,
             autovalidateMode: AutovalidateMode.disabled,
             child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 24.0),
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        16.0, 0.0, 16.0, 0.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -274,8 +278,9 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                 },
                                 stepSize: 1,
                                 minimum: 1,
-                                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    12.0, 0.0, 12.0, 0.0),
+                                contentPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        12.0, 0.0, 12.0, 0.0),
                               ),
                             ),
                             Padding(
@@ -496,8 +501,8 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         color: FlutterFlowTheme.of(context)
                                             .secondaryBackground,
                                         child: CupertinoTheme(
-                                          data: datePickedCupertinoTheme
-                                              .copyWith(
+                                          data:
+                                              datePickedCupertinoTheme.copyWith(
                                             textTheme: datePickedCupertinoTheme
                                                 .textTheme
                                                 .copyWith(
@@ -564,7 +569,8 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                                 .labelMedium
                                                 .override(
                                                   fontFamily: 'Manrope',
-                                                  color: const Color(0xFFBABABA),
+                                                  color:
+                                                      const Color(0xFFBABABA),
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
@@ -687,7 +693,8 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                                 .labelMedium
                                                 .override(
                                                   fontFamily: 'Manrope',
-                                                  color: const Color(0xFFBABABA),
+                                                  color:
+                                                      const Color(0xFFBABABA),
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
@@ -732,7 +739,8 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                                               FontWeight.w500,
                                                         ),
                                               ),
-                                            ].divide(const SizedBox(width: 4.0)),
+                                            ].divide(
+                                                const SizedBox(width: 4.0)),
                                           ),
                                         ].divide(const SizedBox(height: 4.0)),
                                       ),
@@ -818,8 +826,8 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        16.0, 0.0, 16.0, 0.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -832,6 +840,11 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                           _model.targetPenalitieID == ''))
                                   ? null
                                   : () async {
+                                      final scaffoldMessenger =
+                                          ScaffoldMessenger.of(context);
+                                      final theme =
+                                          FlutterFlowTheme.of(context);
+
                                       _model.message =
                                           await TransactionsTable().insert({
                                         'transaction_date':
@@ -855,6 +868,9 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         'transaction_amount':
                                             _model.quantityValue?.toDouble(),
                                       });
+                                      if (!mounted) {
+                                        return;
+                                      }
                                       safeSetState(() {
                                         _model.typeValueController?.reset();
                                       });
@@ -872,24 +888,18 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       _model.targetPenalitieID = null;
                                       _model.targetPenalitieValue = 0.0;
                                       safeSetState(() {});
-                                      ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      scaffoldMessenger.clearSnackBars();
+                                      scaffoldMessenger.showSnackBar(
                                         SnackBar(
                                           content: Text(
                                             'Transaction ajoutée',
                                             style: TextStyle(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
+                                              color: theme.primaryText,
                                             ),
                                           ),
-                                          duration:
-                                              const Duration(milliseconds: 2000),
-                                          backgroundColor:
-                                              FlutterFlowTheme.of(context)
-                                                  .success,
+                                          duration: const Duration(
+                                              milliseconds: 2000),
+                                          backgroundColor: theme.success,
                                         ),
                                       );
 
@@ -901,8 +911,9 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                 height: 48.0,
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
+                                iconPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).primary,
                                 textStyle: FlutterFlowTheme.of(context)
                                     .titleSmall
@@ -928,13 +939,18 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                               onPressed: ((_model.targetUserID == null ||
                                           _model.targetUserID == '') ||
                                       ((_model.transactionVariableTextController
-                                                      .text ==
-                                                  '') ||
+                                                  .text ==
+                                              '') ||
                                           (_model.transactionVariableTextController
                                                   .text ==
                                               '0')))
                                   ? null
                                   : () async {
+                                      final scaffoldMessenger =
+                                          ScaffoldMessenger.of(context);
+                                      final theme =
+                                          FlutterFlowTheme.of(context);
+
                                       _model.message2 =
                                           await TransactionsTable().insert({
                                         'transaction_date':
@@ -960,6 +976,9 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         'transaction_amount':
                                             _model.quantityValue?.toDouble(),
                                       });
+                                      if (!mounted) {
+                                        return;
+                                      }
                                       safeSetState(() {
                                         _model.typeValueController?.reset();
                                       });
@@ -977,24 +996,18 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       _model.targetPenalitieID = null;
                                       _model.targetPenalitieValue = 0.0;
                                       safeSetState(() {});
-                                      ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
+                                      scaffoldMessenger.clearSnackBars();
+                                      scaffoldMessenger.showSnackBar(
                                         SnackBar(
                                           content: Text(
                                             'Transaction ajoutée',
                                             style: TextStyle(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryText,
+                                              color: theme.primaryText,
                                             ),
                                           ),
-                                          duration:
-                                              const Duration(milliseconds: 2000),
-                                          backgroundColor:
-                                              FlutterFlowTheme.of(context)
-                                                  .success,
+                                          duration: const Duration(
+                                              milliseconds: 2000),
+                                          backgroundColor: theme.success,
                                         ),
                                       );
 
@@ -1006,8 +1019,9 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                 height: 48.0,
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
+                                iconPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).primary,
                                 textStyle: FlutterFlowTheme.of(context)
                                     .titleSmall

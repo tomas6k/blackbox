@@ -98,7 +98,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Align(
-                                  alignment: const AlignmentDirectional(0.0, -1.0),
+                                  alignment:
+                                      const AlignmentDirectional(0.0, -1.0),
                                   child: Text(
                                     'Se connecter',
                                     style: FlutterFlowTheme.of(context)
@@ -120,7 +121,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             _model.emailAddressTextController,
                                         focusNode: _model.emailAddressFocusNode,
                                         autofocus: true,
-                                        autofillHints: const [AutofillHints.email],
+                                        autofillHints: const [
+                                          AutofillHints.email
+                                        ],
                                         obscureText: false,
                                         decoration: InputDecoration(
                                           labelText: 'Email',
@@ -197,7 +200,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             _model.passwordTextController,
                                         focusNode: _model.passwordFocusNode,
                                         autofocus: true,
-                                        autofillHints: const [AutofillHints.password],
+                                        autofillHints: const [
+                                          AutofillHints.password
+                                        ],
                                         obscureText: !_model.passwordVisibility,
                                         decoration: InputDecoration(
                                           labelText: 'Mot de passe',
@@ -290,7 +295,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                   children: [
                                     FFButtonWidget(
                                       onPressed: () async {
-                                        GoRouter.of(context).prepareAuthEvent();
+                                        final router = GoRouter.of(context);
+                                        router.prepareAuthEvent();
 
                                         final user =
                                             await authManager.signInWithEmail(
@@ -310,6 +316,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             currentUserUid,
                                           ),
                                         );
+                                        if (!mounted) {
+                                          return;
+                                        }
                                         if (_model.teamQuery?.length == 1) {
                                           _model.saisonOutput =
                                               await SaisonsTable().queryRows(
@@ -324,6 +333,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   true,
                                                 ),
                                           );
+                                          if (!mounted) {
+                                            return;
+                                          }
                                           FFAppState().teamSetup = _model
                                               .saisonOutput!.first.teamId!;
                                           FFAppState().userSetup =
@@ -333,15 +345,27 @@ class _LoginWidgetState extends State<LoginWidget> {
                                           FFAppState().roleSetup =
                                               _model.teamQuery!.first.role!;
 
-                                          context.goNamedAuth(
-                                              'Home', context.mounted);
+                                          if (!mounted ||
+                                              router.shouldRedirect(false)) {
+                                            return;
+                                          }
+                                          router.goNamed('Home');
                                         } else {
-                                          if (_model.teamQuery?.length == 0) {
-                                            context.goNamedAuth(
-                                                'joinTeam', context.mounted);
+                                          final hasNoTeam =
+                                              _model.teamQuery?.isEmpty ?? true;
+                                          if (hasNoTeam) {
+                                            if (!mounted ||
+                                                router.shouldRedirect(false)) {
+                                              return;
+                                            }
+                                            router.goNamed('joinTeam');
                                           } else {
+                                            if (!mounted) {
+                                              return;
+                                            }
+                                            final dialogContext = context;
                                             await showDialog(
-                                              context: context,
+                                              context: dialogContext,
                                               builder: (alertDialogContext) {
                                                 return AlertDialog(
                                                   title: const Text(
@@ -359,24 +383,24 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                 );
                                               },
                                             );
+                                            if (!mounted) {
+                                              return;
+                                            }
                                           }
                                         }
 
                                         // await actions.onesignalLogin(
                                         //   currentUserUid,
                                         // );
-
-                                        safeSetState(() {});
                                       },
                                       text: 'Se connecter',
                                       options: FFButtonOptions(
                                         width: 370.0,
                                         height: 44.0,
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 0.0, 0.0, 0.0),
-                                        iconPadding:
-                                            const EdgeInsetsDirectional.fromSTEB(
-                                                0.0, 0.0, 0.0, 0.0),
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(0.0, 0.0, 0.0, 0.0),
+                                        iconPadding: const EdgeInsetsDirectional
+                                            .fromSTEB(0.0, 0.0, 0.0, 0.0),
                                         color: Colors.black,
                                         textStyle: FlutterFlowTheme.of(context)
                                             .titleSmall
@@ -418,11 +442,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                       options: FFButtonOptions(
                                         width: 370.0,
                                         height: 44.0,
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 0.0, 0.0, 0.0),
-                                        iconPadding:
-                                            const EdgeInsetsDirectional.fromSTEB(
-                                                0.0, 0.0, 0.0, 0.0),
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(0.0, 0.0, 0.0, 0.0),
+                                        iconPadding: const EdgeInsetsDirectional
+                                            .fromSTEB(0.0, 0.0, 0.0, 0.0),
                                         color: Colors.transparent,
                                         textStyle: FlutterFlowTheme.of(context)
                                             .titleSmall
@@ -445,10 +468,12 @@ class _LoginWidgetState extends State<LoginWidget> {
 
                                 // You will have to add an action on this rich text to go to your login page.
                                 Align(
-                                  alignment: const AlignmentDirectional(0.0, -1.0),
+                                  alignment:
+                                      const AlignmentDirectional(0.0, -1.0),
                                   child: Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 12.0, 0.0, 12.0),
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            0.0, 12.0, 0.0, 12.0),
                                     child: InkWell(
                                       splashColor: Colors.transparent,
                                       focusColor: Colors.transparent,

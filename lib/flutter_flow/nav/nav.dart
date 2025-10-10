@@ -134,6 +134,12 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           builder: (context, params) => const AddTransactionWidget(),
         ),
         FFRoute(
+          name: 'addTransactionPayment',
+          path: '/addTransactionPayment',
+          requireAuth: true,
+          builder: (context, params) => const AddTransactionPaymentWidget(),
+        ),
+        FFRoute(
           name: 'rules',
           path: '/rules',
           requireAuth: true,

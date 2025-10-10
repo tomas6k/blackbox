@@ -5,6 +5,8 @@ export '/payment/payment_widget.dart' show PaymentWidget;
 export '/main_pages/team/team_widget.dart' show TeamWidget;
 export '/main_pages/profile/profile_widget.dart' show ProfileWidget;
 export '/add_transaction/add_transaction_widget.dart' show AddTransactionWidget;
+export '/add_transaction/add_transaction_payment_widget.dart'
+    show AddTransactionPaymentWidget;
 export '/rules/rules_widget.dart' show RulesWidget;
 export '/auth/create_account/create_account_widget.dart'
     show CreateAccountWidget;
