@@ -166,28 +166,89 @@ class _PaymentInstructionsWidgetState extends State<PaymentInstructionsWidget> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...[
+                        _ribInfoTile(
+                          context,
+                          label: 'Titulaire du compte',
+                          value: 'Arnaud GORGERIN',
+                        ),
+                        _ribInfoTile(
+                          context,
+                          label: 'IBAN',
+                          value: _iban,
+                        ),
+                        _ribInfoTile(
+                          context,
+                          label: 'BIC',
+                          value: 'LYDIFRP2XXX',
+                        ),
+                        _ribInfoTile(
+                          context,
+                          label: 'N° de compte',
+                          value: '00031186495',
+                        ),
+                      ].divide(const SizedBox(height: 12.0)),
+                      const SizedBox(height: 16.0),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context)
+                              .primary
+                              .withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(12.0),
+                          border: Border.all(
+                            color: FlutterFlowTheme.of(context).primary,
+                            width: 1.5,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          'Pensez à indiquer votre nom et prénom dans la raison du virement afin que le trésorier puisse vous identifier.',
+                          style:
+                              FlutterFlowTheme.of(context).titleSmall.override(
+                                    fontFamily: 'Manrope',
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.w700,
+                                    color: FlutterFlowTheme.of(context).primary,
+                                  ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24.0),
+                Text(
+                  'Virement Wero',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        fontFamily: 'Manrope',
+                        letterSpacing: 0.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 12.0),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    borderRadius: BorderRadius.circular(16.0),
+                    border: Border.all(
+                      color: FlutterFlowTheme.of(context)
+                          .primary
+                          .withOpacity(0.08),
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
                     children: [
                       _ribInfoTile(
                         context,
-                        label: 'Titulaire du compte',
-                        value: 'Arnaud GORGERIN',
+                        label: 'Téléphone',
+                        value: '06 81 79 78 05',
                       ),
-                      _ribInfoTile(
-                        context,
-                        label: 'IBAN',
-                        value: _iban,
-                      ),
-                      _ribInfoTile(
-                        context,
-                        label: 'BIC',
-                        value: 'LYDIFRP2XXX',
-                      ),
-                      _ribInfoTile(
-                        context,
-                        label: 'N° de compte',
-                        value: '00031186495',
-                      ),
-                    ].divide(const SizedBox(height: 12.0)),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 24.0),
