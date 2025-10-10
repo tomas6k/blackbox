@@ -123,8 +123,6 @@ class _ShimmerSoldWidgetState extends State<ShimmerSoldWidget>
             ),
           );
         }
-        final columnGetSoldResponse = snapshot.data!;
-
         return Column(
           mainAxisSize: MainAxisSize.max,
           children: [

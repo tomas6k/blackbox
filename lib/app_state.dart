@@ -224,12 +224,6 @@ class FFAppState extends ChangeNotifier {
       _paymentPendingManager.clearRequest(uniqueKey);
 }
 
-void _safeInit(Function() initializeField) {
-  try {
-    initializeField();
-  } catch (_) {}
-}
-
 Future _safeInitAsync(Function() initializeField) async {
   try {
     await initializeField();

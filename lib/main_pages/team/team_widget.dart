@@ -92,19 +92,20 @@ class _TeamWidgetState extends State<TeamWidget> {
 
                             return Builder(
                               builder: (context) {
-                                final teamList = (getJsonField(
-                                      listViewGetSoldResponse.jsonBody,
-                                      r'''$''',
-                                      true,
-                                    )
-                                                ?.toList()
-                                                .map<GetSoldStruct?>(
-                                                    GetSoldStruct.maybeFromMap)
-                                                .toList()
-                                            as Iterable<GetSoldStruct?>)
+                                final teamItems =
+                                    getJsonField(
+                                          listViewGetSoldResponse.jsonBody,
+                                          r'''$''',
+                                          true,
+                                        )
+                                        as List?;
+                                final teamList = teamItems == null
+                                    ? <GetSoldStruct>[]
+                                    : teamItems
+                                        .map<GetSoldStruct?>(
+                                            GetSoldStruct.maybeFromMap)
                                         .withoutNulls
-                                        .toList() ??
-                                    [];
+                                        .toList();
                                 if (teamList.isEmpty) {
                                   return Center(
                                     child: Image.asset(

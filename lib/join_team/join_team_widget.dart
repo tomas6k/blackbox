@@ -230,30 +230,6 @@ class _JoinTeamWidgetState extends State<JoinTeamWidget> {
                             ),
                           ),
                         ),
-                        if (!true)
-                          FlutterFlowIconButton(
-                            borderColor: FlutterFlowTheme.of(context).alternate,
-                            borderRadius: 20.0,
-                            borderWidth: 2.0,
-                            buttonSize: 64.0,
-                            fillColor: Colors.white,
-                            icon: Icon(
-                              Icons.camera_alt,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 24.0,
-                            ),
-                            onPressed: () async {
-                              _model.teamCode =
-                                  await FlutterBarcodeScanner.scanBarcode(
-                                '#C62828', // scanning line color
-                                'Cancel', // cancel button text
-                                true, // whether to show the flash icon
-                                ScanMode.QR,
-                              );
-
-                              safeSetState(() {});
-                            },
-                          ),
                       ].divide(const SizedBox(width: 8.0)),
                     ),
                   ].divide(const SizedBox(height: 16.0)),

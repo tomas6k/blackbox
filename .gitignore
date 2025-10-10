@@ -11,6 +11,10 @@ build/
 android/app/build/
 ios/Flutter/ephemeral/
 
+# Signing keys
+android/key.properties
+
+
 # IntelliJ/VS Code
 .idea/
 .vscode/

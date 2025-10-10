@@ -1,3 +1,5 @@
+import com.android.build.gradle.LibraryExtension
+
 allprojects {
     repositories {
         google()
@@ -5,24 +7,30 @@ allprojects {
     }
 }
 
-rootProject.buildDir = '../build'
+// Align build outputs with Flutter template (Gradle 8+ syntax).
+def newBuildDir = rootProject.layout.buildDirectory.dir("../../build").get()
+rootProject.layout.buildDirectory.set(newBuildDir)
+
+subprojects { project ->
+    def newSubprojectBuildDir = newBuildDir.dir(project.name)
+    project.layout.buildDirectory.set(newSubprojectBuildDir)
+}
+
 subprojects {
-    afterEvaluate { project ->
-        if (project.plugins.hasPlugin("com.android.application") ||
-                project.plugins.hasPlugin("com.android.library")) {
-            project.android {
-                compileSdkVersion 34
+    project.evaluationDependsOn(":app")
+}
+
+tasks.register("clean", Delete) {
+    delete(rootProject.layout.buildDirectory)
+}
+
+// Workaround for plugins that have not yet declared a namespace with AGP 8+.
+subprojects { project ->
+    if (project.name == "app_links") {
+        project.plugins.withId("com.android.library") {
+            project.extensions.configure(com.android.build.gradle.LibraryExtension) { ext ->
+                ext.namespace = "com.llfbandit.app_links"
             }
         }
     }
-}
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(':app')
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
