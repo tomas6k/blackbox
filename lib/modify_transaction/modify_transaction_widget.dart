@@ -97,7 +97,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
           ),
           actions: [
             Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 0.0),
               child: FlutterFlowIconButton(
                 borderRadius: 8.0,
                 borderWidth: 0.0,
@@ -122,14 +123,15 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
             key: _model.formKey,
             autovalidateMode: AutovalidateMode.disabled,
             child: Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 24.0),
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        16.0, 0.0, 16.0, 0.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -275,8 +277,9 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                 },
                                 stepSize: 1,
                                 minimum: 1,
-                                contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    12.0, 0.0, 12.0, 0.0),
+                                contentPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        12.0, 0.0, 12.0, 0.0),
                               ),
                             ),
                             Padding(
@@ -497,8 +500,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                         color: FlutterFlowTheme.of(context)
                                             .secondaryBackground,
                                         child: CupertinoTheme(
-                                          data: datePickedCupertinoTheme
-                                              .copyWith(
+                                          data:
+                                              datePickedCupertinoTheme.copyWith(
                                             textTheme: datePickedCupertinoTheme
                                                 .textTheme
                                                 .copyWith(
@@ -525,6 +528,7 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                                 FlutterFlowTheme.of(context)
                                                     .secondaryBackground,
                                             use24hFormat: false,
+                                            showDayOfWeek: true,
                                             onDateTimeChanged: (newDateTime) =>
                                                 safeSetState(() {
                                               _model.datePicked = newDateTime;
@@ -565,13 +569,14 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                                 .labelMedium
                                                 .override(
                                                   fontFamily: 'Manrope',
-                                                  color: const Color(0xFFBABABA),
+                                                  color:
+                                                      const Color(0xFFBABABA),
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
                                           Text(
                                             dateTimeFormat(
-                                              "yMMMd",
+                                              'EEEE d MMM y',
                                               _model.date,
                                               locale:
                                                   FFLocalizations.of(context)
@@ -688,7 +693,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                                 .labelMedium
                                                 .override(
                                                   fontFamily: 'Manrope',
-                                                  color: const Color(0xFFBABABA),
+                                                  color:
+                                                      const Color(0xFFBABABA),
                                                   letterSpacing: 0.0,
                                                 ),
                                           ),
@@ -733,7 +739,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                                               FontWeight.w500,
                                                         ),
                                               ),
-                                            ].divide(const SizedBox(width: 4.0)),
+                                            ].divide(
+                                                const SizedBox(width: 4.0)),
                                           ),
                                         ].divide(const SizedBox(height: 4.0)),
                                       ),
@@ -819,8 +826,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        16.0, 0.0, 16.0, 0.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -886,8 +893,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                                       .primaryText,
                                             ),
                                           ),
-                                          duration:
-                                              const Duration(milliseconds: 2000),
+                                          duration: const Duration(
+                                              milliseconds: 2000),
                                           backgroundColor:
                                               FlutterFlowTheme.of(context)
                                                   .success,
@@ -902,8 +909,9 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                 height: 48.0,
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
+                                iconPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).primary,
                                 textStyle: FlutterFlowTheme.of(context)
                                     .titleSmall
@@ -929,8 +937,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                               onPressed: ((_model.targetUserID == null ||
                                           _model.targetUserID == '') ||
                                       ((_model.transactionVariableTextController
-                                                      .text ==
-                                                  '') ||
+                                                  .text ==
+                                              '') ||
                                           (_model.transactionVariableTextController
                                                   .text ==
                                               '0')))
@@ -991,8 +999,8 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                                       .primaryText,
                                             ),
                                           ),
-                                          duration:
-                                              const Duration(milliseconds: 2000),
+                                          duration: const Duration(
+                                              milliseconds: 2000),
                                           backgroundColor:
                                               FlutterFlowTheme.of(context)
                                                   .success,
@@ -1007,8 +1015,9 @@ class _ModifyTransactionWidgetState extends State<ModifyTransactionWidget> {
                                 height: 48.0,
                                 padding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
-                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
+                                iconPadding:
+                                    const EdgeInsetsDirectional.fromSTEB(
+                                        0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).primary,
                                 textStyle: FlutterFlowTheme.of(context)
                                     .titleSmall

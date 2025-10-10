@@ -438,6 +438,7 @@ class _AddTransactionPaymentWidgetState
                                                           getCurrentTimestamp,
                                                       maximumDate:
                                                           DateTime(2050),
+                                                      showDayOfWeek: true,
                                                       onDateTimeChanged:
                                                           (newDateTime) =>
                                                               safeSetState(() {
@@ -487,7 +488,7 @@ class _AddTransactionPaymentWidgetState
                                                   ),
                                                   Text(
                                                     dateTimeFormat(
-                                                      'yMMMd',
+                                                      'EEEE d MMM y',
                                                       _model.date,
                                                       locale:
                                                           FFLocalizations.of(

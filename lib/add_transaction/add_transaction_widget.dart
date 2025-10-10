@@ -529,6 +529,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                                 FlutterFlowTheme.of(context)
                                                     .secondaryBackground,
                                             use24hFormat: false,
+                                            showDayOfWeek: true,
                                             onDateTimeChanged: (newDateTime) =>
                                                 safeSetState(() {
                                               _model.datePicked = newDateTime;
@@ -576,7 +577,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                           ),
                                           Text(
                                             dateTimeFormat(
-                                              "yMMMd",
+                                              'EEEE d MMM y',
                                               _model.date,
                                               locale:
                                                   FFLocalizations.of(context)
