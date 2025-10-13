@@ -105,50 +105,77 @@ class _SelectPenalitieWidgetState extends State<SelectPenalitieWidget> {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-              child: TextFormField(
-                controller: _model.searchTextController,
-                focusNode: _model.searchFocusNode,
-                onChanged: (_) => EasyDebounce.debounce(
-                  '_model.searchTextController',
-                  const Duration(milliseconds: 50),
-                  () => safeSetState(() {}),
-                ),
-                autofocus: false,
-                obscureText: false,
-                decoration: InputDecoration(
-                  labelText: 'Rechercher',
-                  hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: TextFormField(
+                  controller: _model.searchTextController,
+                  focusNode: _model.searchFocusNode,
+                  onChanged: (_) => EasyDebounce.debounce(
+                    '_model.searchTextController',
+                    const Duration(milliseconds: 50),
+                    () => safeSetState(() {}),
+                  ),
+                  autofocus: false,
+                  obscureText: false,
+                  decoration: InputDecoration(
+                    labelText: 'Rechercher',
+                    hintStyle: FlutterFlowTheme.of(context).labelMedium.override(
+                          fontFamily: 'Manrope',
+                          fontSize: 16.0,
+                          letterSpacing: 0.0,
+                        ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      borderSide: const BorderSide(
+                        color: Colors.transparent,
+                        width: 0.0,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      borderSide: BorderSide(
+                        color: FlutterFlowTheme.of(context).primary,
+                        width: 1.0,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      borderSide: BorderSide(
+                        color: FlutterFlowTheme.of(context).error,
+                        width: 1.0,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.0),
+                      borderSide: BorderSide(
+                        color: FlutterFlowTheme.of(context).error,
+                        width: 1.0,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    suffixIcon: _model.searchTextController!.text.isNotEmpty
+                        ? InkWell(
+                            onTap: () async {
+                              _model.searchTextController?.clear();
+                              safeSetState(() {});
+                            },
+                            child: Icon(
+                              Icons.clear,
+                              color: FlutterFlowTheme.of(context).primaryText,
+                              size: 24.0,
+                            ),
+                          )
+                        : null,
+                  ),
+                  style: FlutterFlowTheme.of(context).bodyMedium.override(
                         fontFamily: 'Manrope',
                         fontSize: 16.0,
                         letterSpacing: 0.0,
                       ),
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  focusedErrorBorder: InputBorder.none,
-                  filled: true,
-                  fillColor: Colors.white,
-                  suffixIcon: _model.searchTextController!.text.isNotEmpty
-                      ? InkWell(
-                          onTap: () async {
-                            _model.searchTextController?.clear();
-                            safeSetState(() {});
-                          },
-                          child: Icon(
-                            Icons.clear,
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            size: 24.0,
-                          ),
-                        )
-                      : null,
+                  validator:
+                      _model.searchTextControllerValidator.asValidator(context),
                 ),
-                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                      fontFamily: 'Manrope',
-                      fontSize: 16.0,
-                      letterSpacing: 0.0,
-                    ),
-                validator:
-                    _model.searchTextControllerValidator.asValidator(context),
               ),
             ),
             Flexible(
@@ -181,15 +208,30 @@ class _SelectPenalitieWidgetState extends State<SelectPenalitieWidget> {
                       ),
                     );
                   }
-                  List<PenaltiesRow> listViewPenaltiesRowList = snapshot.data!;
+                  final penalties = snapshot.data!;
+                  final penaltiesById = {
+                    for (final penalitie in penalties) penalitie.id: penalitie,
+                  };
+                  final recentIds = FFAppState().recentPenaltyIds;
+                  final recentPenalties = recentIds
+                      .map((id) => penaltiesById[id])
+                      .whereType<PenaltiesRow>()
+                      .toList();
+                  final remainingPenalties = penalties
+                      .where((penalitie) => !recentIds.contains(penalitie.id))
+                      .toList();
+                  final combinedPenalties = [
+                    ...recentPenalties,
+                    ...remainingPenalties
+                  ];
 
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     scrollDirection: Axis.vertical,
-                    itemCount: listViewPenaltiesRowList.length,
+                    itemCount: combinedPenalties.length,
                     itemBuilder: (context, listViewIndex) {
                       final listViewPenaltiesRow =
-                          listViewPenaltiesRowList[listViewIndex];
+                          combinedPenalties[listViewIndex];
                       return Visibility(
                         visible: functions.showSearchResult(
                             _model.searchTextController.text,

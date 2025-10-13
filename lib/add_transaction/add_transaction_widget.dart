@@ -995,6 +995,14 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                               _model.quantityValue?.toDouble(),
                                         });
                                       }
+                                      final penalitieId =
+                                          _model.targetPenalitieID ?? '';
+                                      if (penalitieId.isNotEmpty) {
+                                        final appState = FFAppState();
+                                        appState.update(() {
+                                          appState.addRecentPenaltyId(penalitieId);
+                                        });
+                                      }
                                       _model.message = lastMessage;
                                       if (!mounted) {
                                         return;
@@ -1112,6 +1120,14 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                               _model.typeValues?.toList()),
                                           'transaction_amount':
                                               _model.quantityValue?.toDouble(),
+                                        });
+                                      }
+                                      final penalitieId =
+                                          _model.targetPenalitieID ?? '';
+                                      if (penalitieId.isNotEmpty) {
+                                        final appState = FFAppState();
+                                        appState.update(() {
+                                          appState.addRecentPenaltyId(penalitieId);
                                         });
                                       }
                                       _model.message2 = lastMessage2;

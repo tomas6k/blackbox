@@ -34,6 +34,14 @@ class FFAppState extends ChangeNotifier {
     await _safeInitAsync(() async {
       _roleSetup = await secureStorage.getString('ff_roleSetup') ?? _roleSetup;
     });
+    await _safeInitAsync(() async {
+      final storedRecentPenalties =
+          await secureStorage.getString('ff_recent_penalties');
+      if (storedRecentPenalties != null && storedRecentPenalties.isNotEmpty) {
+        _recentPenaltyIds =
+            storedRecentPenalties.split(',').where((id) => id.isNotEmpty).toList();
+      }
+    });
   }
 
   void update(VoidCallback callback) {
@@ -114,6 +122,25 @@ class FFAppState extends ChangeNotifier {
 
   void insertAtIndexInTeamSoldQuerry(int index, dynamic value) {
     teamSoldQuerry.insert(index, value);
+  }
+
+  List<String> _recentPenaltyIds = [];
+  List<String> get recentPenaltyIds => _recentPenaltyIds;
+  set recentPenaltyIds(List<String> value) {
+    _recentPenaltyIds = value;
+    secureStorage.setString('ff_recent_penalties', value.join(','));
+  }
+
+  void addRecentPenaltyId(String value) {
+    if (value.isEmpty) {
+      return;
+    }
+    _recentPenaltyIds.remove(value);
+    _recentPenaltyIds.insert(0, value);
+    if (_recentPenaltyIds.length > 8) {
+      _recentPenaltyIds = _recentPenaltyIds.sublist(0, 8);
+    }
+    secureStorage.setString('ff_recent_penalties', _recentPenaltyIds.join(','));
   }
 
   final _teamInfoManager = FutureRequestManager<ApiCallResponse>();
