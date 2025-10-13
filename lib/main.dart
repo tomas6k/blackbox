@@ -1,5 +1,7 @@
 import '/custom_code/actions/index.dart' as actions;
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -9,7 +11,9 @@ import 'auth/supabase_auth/supabase_user_provider.dart';
 import 'auth/supabase_auth/auth_util.dart';
 
 import '/backend/supabase/supabase.dart';
+import 'app_state.dart';
 import 'backend/firebase/firebase_config.dart';
+import 'backend/firebase/firebase_messaging_service.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/internationalization.dart';
@@ -20,12 +24,22 @@ void main() async {
   GoRouter.optionURLReflectsImperativeAPIs = true;
   usePathUrlStrategy();
 
+  final appState = FFAppState();
+
+  if (!kIsWeb) {
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  }
+
   await initFirebase();
+  await appState.initializePersistedState();
+  final notificationsGranted = await FirebaseMessagingService.initialize(
+    enabled: appState.notificationsEnabled,
+  );
+  if (appState.notificationsEnabled && !notificationsGranted) {
+    appState.notificationsEnabled = false;
+  }
 
   await SupaFlow.initialize();
-
-  final appState = FFAppState(); // Initialize FFAppState
-  await appState.initializePersistedState();
 
   // Start final custom actions code
   await actions.lockOrientation();

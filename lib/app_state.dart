@@ -38,8 +38,17 @@ class FFAppState extends ChangeNotifier {
       final storedRecentPenalties =
           await secureStorage.getString('ff_recent_penalties');
       if (storedRecentPenalties != null && storedRecentPenalties.isNotEmpty) {
-        _recentPenaltyIds =
-            storedRecentPenalties.split(',').where((id) => id.isNotEmpty).toList();
+        _recentPenaltyIds = storedRecentPenalties
+            .split(',')
+            .where((id) => id.isNotEmpty)
+            .toList();
+      }
+    });
+    await _safeInitAsync(() async {
+      final storedNotificationsEnabled =
+          await secureStorage.getBool('ff_notificationsEnabled');
+      if (storedNotificationsEnabled != null) {
+        _notificationsEnabled = storedNotificationsEnabled;
       }
     });
   }
@@ -93,6 +102,13 @@ class FFAppState extends ChangeNotifier {
 
   void deleteRoleSetup() {
     secureStorage.delete(key: 'ff_roleSetup');
+  }
+
+  bool _notificationsEnabled = true;
+  bool get notificationsEnabled => _notificationsEnabled;
+  set notificationsEnabled(bool value) {
+    _notificationsEnabled = value;
+    secureStorage.setBool('ff_notificationsEnabled', value);
   }
 
   List<dynamic> _teamSoldQuerry = [];
@@ -297,5 +313,6 @@ extension FlutterSecureStorageExtensions on FlutterSecureStorage {
             .toList();
       });
   Future<void> setStringList(String key, List<String> value) async =>
-      await writeSync(key: key, value: const ListToCsvConverter().convert([value]));
+      await writeSync(
+          key: key, value: const ListToCsvConverter().convert([value]));
 }

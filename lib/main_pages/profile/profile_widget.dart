@@ -1,8 +1,10 @@
 import '/auth/supabase_auth/auth_util.dart';
+import '/backend/firebase/firebase_messaging_service.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'profile_model.dart';
@@ -33,6 +35,58 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     _model.dispose();
 
     super.dispose();
+  }
+
+  Future<void> _toggleNotifications(
+    BuildContext context,
+    bool enable,
+  ) async {
+    final appState = FFAppState();
+
+    if (enable) {
+      final granted = await FirebaseMessagingService.enableNotifications();
+      if (!granted) {
+        final message = FirebaseMessagingService.pluginAvailable
+            ? 'Autorisez les notifications dans Réglages pour les activer.'
+            : 'Redémarrez complètement l’application après installation pour activer les notifications.';
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              backgroundColor: FlutterFlowTheme.of(context).error,
+            ),
+          );
+        }
+        appState.update(() {
+          appState.notificationsEnabled = false;
+        });
+        return;
+      }
+      appState.update(() {
+        appState.notificationsEnabled = true;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Notifications activées.'),
+            backgroundColor: FlutterFlowTheme.of(context).primary,
+          ),
+        );
+      }
+    } else {
+      await FirebaseMessagingService.disableNotifications();
+      appState.update(() {
+        appState.notificationsEnabled = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Notifications désactivées.'),
+            backgroundColor: FlutterFlowTheme.of(context).secondary,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -81,8 +135,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   child: Stack(
                     children: [
                       Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0.0, 48.0, 0.0, 0.0),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            0.0, 48.0, 0.0, 0.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -147,7 +201,93 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               },
             ),
             Padding(
-              padding: const EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
+              child: Container(
+                width: double.infinity,
+                height: 60.0,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).secondaryBackground,
+                  boxShadow: const [
+                    BoxShadow(
+                      blurRadius: 3.0,
+                      color: Color(0x33000000),
+                      offset: Offset(
+                        0.0,
+                        1.0,
+                      ),
+                    )
+                  ],
+                  borderRadius: BorderRadius.circular(8.0),
+                  shape: BoxShape.rectangle,
+                ),
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                      12.0, 0.0, 12.0, 0.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Icon(
+                        Icons.notifications_outlined,
+                        color: FlutterFlowTheme.of(context).secondaryText,
+                        size: 24.0,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              12.0, 0.0, 12.0, 0.0),
+                          child: Text(
+                            'Notifications push',
+                            style: FlutterFlowTheme.of(context)
+                                .labelLarge
+                                .override(
+                                  fontFamily: 'Manrope',
+                                  letterSpacing: 0.0,
+                                ),
+                          ),
+                        ),
+                      ),
+                      Builder(
+                        builder: (context) {
+                          final supportedPlatforms = {
+                            TargetPlatform.iOS,
+                            TargetPlatform.android
+                          };
+                          final notificationsSupported = !kIsWeb &&
+                              supportedPlatforms.contains(
+                                defaultTargetPlatform,
+                              ) &&
+                              FirebaseMessagingService.pluginAvailable;
+                          return Switch.adaptive(
+                            value: notificationsSupported
+                                ? FFAppState().notificationsEnabled
+                                : false,
+                            onChanged: notificationsSupported
+                                ? (value) async {
+                                    await _toggleNotifications(
+                                      context,
+                                      value,
+                                    );
+                                  }
+                                : null,
+                            activeColor: FlutterFlowTheme.of(context).primary,
+                            activeTrackColor:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                            inactiveTrackColor:
+                                FlutterFlowTheme.of(context).alternate,
+                            inactiveThumbColor:
+                                FlutterFlowTheme.of(context).secondaryText,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(16.0, 12.0, 16.0, 0.0),
               child: InkWell(
                 splashColor: Colors.transparent,
                 focusColor: Colors.transparent,
