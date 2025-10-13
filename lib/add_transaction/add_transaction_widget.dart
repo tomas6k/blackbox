@@ -1000,9 +1000,6 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         return;
                                       }
                                       safeSetState(() {
-                                        _model.typeValueController?.reset();
-                                      });
-                                      safeSetState(() {
                                         _model.transactionVariableTextController
                                             ?.clear();
                                         _model.noteFieldTextController?.clear();
@@ -1121,9 +1118,6 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       if (!mounted) {
                                         return;
                                       }
-                                      safeSetState(() {
-                                        _model.typeValueController?.reset();
-                                      });
                                       safeSetState(() {
                                         _model.transactionVariableTextController
                                             ?.clear();

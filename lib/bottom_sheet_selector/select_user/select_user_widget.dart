@@ -348,18 +348,12 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                                     child: Container(
                                       width: double.infinity,
                                       decoration: BoxDecoration(
-                                        color: isSelected
-                                            ? FlutterFlowTheme.of(context)
-                                                .primaryBackground
-                                            : FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
                                         borderRadius:
                                             BorderRadius.circular(16.0),
                                         border: Border.all(
-                                          color: isSelected
-                                              ? FlutterFlowTheme.of(context)
-                                                  .primary
-                                              : Colors.transparent,
+                                          color: Colors.transparent,
                                           width: 2.0,
                                         ),
                                       ),
