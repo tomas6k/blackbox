@@ -1,10 +1,10 @@
-import '/backend/supabase/supabase.dart';
 import '/bottom_sheet_selector/bottom_sheet_month_year_selector/bottom_sheet_month_year_selector_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/item/item_transaction/item_transaction_widget.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
+import '/custom_code/services/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,6 +23,31 @@ class _MyTransactionsWidgetState extends State<MyTransactionsWidget> {
   late MyTransactionsModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final TransactionsRepository _transactionsRepository =
+      const TransactionsRepository();
+
+  Future<void> _refreshTransactions({
+    int? month,
+    int? year,
+  }) async {
+    final extractedMonth =
+        month ?? (_model.monthSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'month'));
+    final extractedYear =
+        year ?? (_model.yearSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'year'));
+
+    _model.monthSetup = extractedMonth;
+    _model.yearSetup = extractedYear;
+
+    final transactions = await _transactionsRepository.fetchForPeriod(
+      saisonId: FFAppState().saisonSetup,
+      month: extractedMonth,
+      year: extractedYear,
+      transactionToId: FFAppState().userSetup,
+    );
+
+    _model.monthTransactions = transactions.toList();
+    safeSetState(() {});
+  }
 
   @override
   void initState() {
@@ -31,40 +56,10 @@ class _MyTransactionsWidgetState extends State<MyTransactionsWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.monthSetup =
-          functions.extractDateDetails(getCurrentTimestamp, 'month');
-      _model.yearSetup =
-          functions.extractDateDetails(getCurrentTimestamp, 'year');
-      safeSetState(() {});
-      _model.transactionsMonth = await TransactionsTable().queryRows(
-        queryFn: (q) => q
-            .eq(
-              'saison_id',
-              FFAppState().saisonSetup,
-            )
-            .gte(
-              'transaction_date',
-              supaSerialize<DateTime>(functions.getBoundaryDate(
-                  _model.monthSetup, _model.yearSetup, 'first')),
-            )
-            .eq(
-              'statut',
-              1.0,
-            )
-            .lte(
-              'transaction_date',
-              supaSerialize<DateTime>(functions.getBoundaryDate(
-                  _model.monthSetup, _model.yearSetup, 'end')),
-            )
-            .eq(
-              'transaction_to',
-              FFAppState().userSetup,
-            )
-            .order('transaction_date'),
+      await _refreshTransactions(
+        month: functions.extractDateDetails(getCurrentTimestamp, 'month'),
+        year: functions.extractDateDetails(getCurrentTimestamp, 'year'),
       );
-      _model.monthTransactions =
-          _model.transactionsMonth!.toList().cast<TransactionsRow>();
-      safeSetState(() {});
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -156,59 +151,12 @@ class _MyTransactionsWidgetState extends State<MyTransactionsWidget> {
                             ).then((value) => safeSetState(
                                 () => _model.buttomSheetFilterDate2 = value));
 
-                            _model.monthSetup =
-                                _model.buttomSheetFilterDate2?.month;
-                            _model.yearSetup =
-                                _model.buttomSheetFilterDate2?.year;
-                            safeSetState(() {});
-                            _model.transactionsMonth2 =
-                                await TransactionsTable().queryRows(
-                              queryFn: (q) => q
-                                  .eq(
-                                    'saison_id',
-                                    FFAppState().saisonSetup,
-                                  )
-                                  .gte(
-                                    'transaction_date',
-                                    supaSerialize<DateTime>(
-                                        functions.getBoundaryDate(
-                                            _model.monthSetup,
-                                            _model.yearSetup,
-                                            'first')),
-                                  )
-                                  .eq(
-                                    'statut',
-                                    1.0,
-                                  )
-                                  .lte(
-                                    'transaction_date',
-                                    supaSerialize<DateTime>(
-                                        functions.getBoundaryDate(
-                                            _model.monthSetup,
-                                            _model.yearSetup,
-                                            'end')),
-                                  )
-                                  .eq(
-                                    'transaction_to',
-                                    FFAppState().userSetup,
-                                  )
-                                  .order('transaction_date'),
-                            );
-                            _model.monthTransactions = _model
-                                .transactionsMonth2!
-                                .toList()
-                                .cast<TransactionsRow>();
-                            safeSetState(() {});
-                            if ((_model.monthSetup == null) ||
-                                (_model.yearSetup == null)) {
-                              _model.monthSetup = functions.extractDateDetails(
-                                  getCurrentTimestamp, 'month');
-                              _model.yearSetup = functions.extractDateDetails(
-                                  getCurrentTimestamp, 'year');
-                              safeSetState(() {});
+                            if (_model.buttomSheetFilterDate2 != null) {
+                              await _refreshTransactions(
+                                month: _model.buttomSheetFilterDate2?.month,
+                                year: _model.buttomSheetFilterDate2?.year,
+                              );
                             }
-
-                            safeSetState(() {});
                           },
                           child: Container(
                             height: 36.0,

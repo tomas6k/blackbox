@@ -28,12 +28,8 @@ class MyTransactionsModel extends FlutterFlowModel<MyTransactionsWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  // Stores action output result for [Backend Call - Query Rows] action in myTransactions widget.
-  List<TransactionsRow>? transactionsMonth;
   // Stores action output result for [Bottom Sheet - BottomSheetMonthYearSelector] action in Container widget.
   BottomSheetFilterDateStruct? buttomSheetFilterDate2;
-  // Stores action output result for [Backend Call - Query Rows] action in Container widget.
-  List<TransactionsRow>? transactionsMonth2;
 
   @override
   void initState(BuildContext context) {}

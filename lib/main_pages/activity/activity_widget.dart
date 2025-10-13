@@ -6,6 +6,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/item/item_transaction/item_transaction_widget.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
+import '/custom_code/services/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final TransactionsRepository _transactionsRepository =
+      const TransactionsRepository();
+
   Future<void> _refreshTransactions({
     int? month,
     int? year,
@@ -45,45 +49,14 @@ class _ActivityWidgetState extends State<ActivityWidget> {
     _model.yearSetup = selectedYear;
     _model.whoSetup = selectedPlayer;
 
-    final startDate =
-        functions.getBoundaryDate(selectedMonth, selectedYear, 'first');
-    final endDate =
-        functions.getBoundaryDate(selectedMonth, selectedYear, 'end');
-
-    final transactions = await TransactionsTable().queryRows(
-      queryFn: (q) {
-        var query = q
-            .eq(
-              'saison_id',
-              FFAppState().saisonSetup,
-            )
-            .eq(
-              'statut',
-              1.0,
-            )
-            .gte(
-              'transaction_date',
-              supaSerialize<DateTime>(startDate),
-            )
-            .lte(
-              'transaction_date',
-              supaSerialize<DateTime>(endDate),
-            );
-
-        if ((playerId != null) && playerId.isNotEmpty) {
-          query = query.eq(
-            'transaction_to',
-            playerId,
-          );
-        }
-
-        return query.order('transaction_date');
-      },
+    final transactions = await _transactionsRepository.fetchForPeriod(
+      saisonId: FFAppState().saisonSetup,
+      month: selectedMonth,
+      year: selectedYear,
+      transactionToId: playerId,
     );
 
-    _model.transactionsMonth = transactions;
-    _model.monthTransactions =
-        transactions.toList().cast<TransactionsRow>();
+    _model.monthTransactions = transactions.toList();
     safeSetState(() {});
   }
 
@@ -486,8 +459,6 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                                     if (_model.transactionChangeinActivity ??
                                         false) {
                                       await _refreshTransactions();
-                                      _model.transactionsMonth4 =
-                                          _model.transactionsMonth;
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(

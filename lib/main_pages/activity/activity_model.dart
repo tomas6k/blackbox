@@ -28,20 +28,12 @@ class ActivityModel extends FlutterFlowModel<ActivityWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  // Stores action output result for [Backend Call - Query Rows] action in Activity widget.
-  List<TransactionsRow>? transactionsMonth;
   // Stores action output result for [Bottom Sheet - BottomSheetMonthYearSelector] action in Container widget.
   BottomSheetFilterDateStruct? buttomSheetFilterDate2;
-  // Stores action output result for [Backend Call - Query Rows] action in Container widget.
-  List<TransactionsRow>? transactionsMonth2;
   // Stores action output result for [Bottom Sheet - selectUser] action in Container widget.
   UserTeamsRow? whoPlayer;
-  // Stores action output result for [Backend Call - Query Rows] action in Container widget.
-  List<TransactionsRow>? transactionsMonth3;
   // Stores action output result for [Bottom Sheet - BottomSheetTransaction] action in itemTransaction widget.
   bool? transactionChangeinActivity;
-  // Stores action output result for [Backend Call - Query Rows] action in itemTransaction widget.
-  List<TransactionsRow>? transactionsMonth4;
 
   @override
   void initState(BuildContext context) {}
