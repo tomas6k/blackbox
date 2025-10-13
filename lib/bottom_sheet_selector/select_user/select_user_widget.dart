@@ -10,7 +10,9 @@ import 'select_user_model.dart';
 export 'select_user_model.dart';
 
 class SelectUserWidget extends StatefulWidget {
-  const SelectUserWidget({super.key});
+  const SelectUserWidget({super.key, this.showAllOption = true});
+
+  final bool showAllOption;
 
   @override
   State<SelectUserWidget> createState() => _SelectUserWidgetState();
@@ -187,6 +189,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                   }
                   List<UserTeamsRow> listViewUserTeamsRowList = snapshot.data!;
 
+                  final hasAllOption = widget.showAllOption;
                   return ListView.builder(
                     padding: const EdgeInsets.fromLTRB(
                       0,
@@ -195,9 +198,11 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                       48.0,
                     ),
                     scrollDirection: Axis.vertical,
-                    itemCount: listViewUserTeamsRowList.length + 1,
+                    itemCount: hasAllOption
+                        ? listViewUserTeamsRowList.length + 1
+                        : listViewUserTeamsRowList.length,
                     itemBuilder: (context, listViewIndex) {
-                      if (listViewIndex == 0) {
+                      if (hasAllOption && listViewIndex == 0) {
                         return Padding(
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               16.0, 12.0, 16.0, 0.0),
@@ -281,7 +286,9 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                       }
 
                       final listViewUserTeamsRow =
-                          listViewUserTeamsRowList[listViewIndex - 1];
+                          listViewUserTeamsRowList[hasAllOption
+                              ? listViewIndex - 1
+                              : listViewIndex];
                       return Visibility(
                         visible: functions.showSearchResult(
                             _model.searchTextController.text,

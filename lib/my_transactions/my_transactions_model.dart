@@ -1,30 +1,42 @@
 import '/backend/schema/structs/index.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/custom_code/services/transactions_feed_controller.dart';
 import 'my_transactions_widget.dart' show MyTransactionsWidget;
 import 'package:flutter/material.dart';
 
 class MyTransactionsModel extends FlutterFlowModel<MyTransactionsWidget> {
   ///  Local state fields for this page.
 
-  List<TransactionsRow> monthTransactions = [];
+  late TransactionsFeedController transactionsFeedController;
+
+  List<TransactionsRow> get monthTransactions =>
+      transactionsFeedController.transactions;
+  set monthTransactions(List<TransactionsRow> value) =>
+      transactionsFeedController.transactions = value;
   void addToMonthTransactions(TransactionsRow item) =>
-      monthTransactions.add(item);
+      transactionsFeedController.transactions.add(item);
   void removeFromMonthTransactions(TransactionsRow item) =>
-      monthTransactions.remove(item);
+      transactionsFeedController.transactions.remove(item);
   void removeAtIndexFromMonthTransactions(int index) =>
-      monthTransactions.removeAt(index);
+      transactionsFeedController.transactions.removeAt(index);
   void insertAtIndexInMonthTransactions(int index, TransactionsRow item) =>
-      monthTransactions.insert(index, item);
+      transactionsFeedController.transactions.insert(index, item);
   void updateMonthTransactionsAtIndex(
-          int index, Function(TransactionsRow) updateFn) =>
-      monthTransactions[index] = updateFn(monthTransactions[index]);
+      int index, Function(TransactionsRow) updateFn) {
+    monthTransactions[index] =
+        updateFn(transactionsFeedController.transactions[index]);
+  }
 
-  int? monthSetup;
+  int? get monthSetup => transactionsFeedController.month;
+  set monthSetup(int? value) => transactionsFeedController.month = value;
 
-  int? yearSetup;
+  int? get yearSetup => transactionsFeedController.year;
+  set yearSetup(int? value) => transactionsFeedController.year = value;
 
-  UserTeamsRow? whoSetup;
+  UserTeamsRow? get whoSetup => transactionsFeedController.selectedPlayer;
+  set whoSetup(UserTeamsRow? value) =>
+      transactionsFeedController.selectedPlayer = value;
 
   ///  State fields for stateful widgets in this page.
 
@@ -32,7 +44,9 @@ class MyTransactionsModel extends FlutterFlowModel<MyTransactionsWidget> {
   BottomSheetFilterDateStruct? buttomSheetFilterDate2;
 
   @override
-  void initState(BuildContext context) {}
+  void initState(BuildContext context) {
+    transactionsFeedController = TransactionsFeedController();
+  }
 
   @override
   void dispose() {}

@@ -261,20 +261,28 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       ),
                                 ),
                                 count: _model.quantityValue ??= 1,
-                                updateCount: (count) async {
+                                updateCount: (count) {
                                   safeSetState(
                                       () => _model.quantityValue = count);
-                                  _model.calculatedValue3 =
-                                      await actions.calculateValue(
-                                    _model.typeValues!.toList(),
-                                    _model.penalitieChoose!.penalitieValue,
-                                    _model.quantityValue!,
-                                  );
-                                  _model.transactionValue =
-                                      _model.calculatedValue3!;
-                                  safeSetState(() {});
-
-                                  safeSetState(() {});
+                                  final selectedTypes = _model.typeValues;
+                                  final penalitie = _model.penalitieChoose;
+                                  if (selectedTypes != null &&
+                                      penalitie != null) {
+                                    actions
+                                        .calculateValue(
+                                      selectedTypes.toList(),
+                                      penalitie.penalitieValue,
+                                      count,
+                                    )
+                                        .then((value) {
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      _model.calculatedValue3 = value;
+                                      _model.transactionValue = value;
+                                      safeSetState(() {});
+                                    });
+                                  }
                                 },
                                 stepSize: 1,
                                 minimum: 1,
@@ -291,19 +299,28 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                   ChipData('Gameday'),
                                   ChipData('BlackWeek')
                                 ],
-                                onChanged: (val) async {
+                                onChanged: (val) {
                                   safeSetState(() => _model.typeValues = val);
-                                  _model.calculatedValue2 =
-                                      await actions.calculateValue(
-                                    _model.typeValues!.toList(),
-                                    _model.penalitieChoose!.penalitieValue,
-                                    _model.quantityValue!,
-                                  );
-                                  _model.transactionValue =
-                                      _model.calculatedValue2!;
-                                  safeSetState(() {});
-
-                                  safeSetState(() {});
+                                  final penalitie = _model.penalitieChoose;
+                                  final quantity = _model.quantityValue ?? 1;
+                                  final selectedTypes =
+                                      (val ?? <String>[]).toList();
+                                  if (penalitie != null) {
+                                    actions
+                                        .calculateValue(
+                                      selectedTypes,
+                                      penalitie.penalitieValue,
+                                      quantity,
+                                    )
+                                        .then((value) {
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      _model.calculatedValue2 = value;
+                                      _model.transactionValue = value;
+                                      safeSetState(() {});
+                                    });
+                                  }
                                 },
                                 selectedChipStyle: ChipStyle(
                                   backgroundColor:
@@ -364,7 +381,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            await showModalBottomSheet(
+                            final selection = await showModalBottomSheet(
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
                               context: context,
@@ -377,15 +394,21 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       height:
                                           MediaQuery.sizeOf(context).height *
                                               0.9,
-                                      child: const SelectUserWidget(),
+                                    child: const SelectUserWidget(
+                                      showAllOption: false,
+                                    ),
                                     ),
                                   ),
                                 );
                               },
-                            ).then((value) =>
-                                safeSetState(() => _model.userChoose = value));
+                            );
 
-                            if (_model.userChoose != null) {
+                            if (!mounted) {
+                              return;
+                            }
+
+                            if (selection is UserTeamsRow) {
+                              safeSetState(() => _model.userChoose = selection);
                               _model.targetUserName =
                                   _model.userChoose?.displayName;
                               _model.targetUserImg =
@@ -654,12 +677,12 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                 safeSetState(() {});
                                 _model.calculatedValue =
                                     await actions.calculateValue(
-                                  _model.typeValues!.toList(),
+                                  (_model.typeValues ?? <String>[]).toList(),
                                   valueOrDefault<double>(
                                     _model.penalitieChoose?.penalitieValue,
                                     0.0,
                                   ),
-                                  _model.quantityValue!,
+                                  _model.quantityValue ?? 1,
                                 );
                                 _model.transactionValue =
                                     _model.calculatedValue!;

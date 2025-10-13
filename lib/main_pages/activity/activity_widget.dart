@@ -6,7 +6,6 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/item/item_transaction/item_transaction_widget.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
-import '/custom_code/services/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -27,36 +26,20 @@ class _ActivityWidgetState extends State<ActivityWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final TransactionsRepository _transactionsRepository =
-      const TransactionsRepository();
-
   Future<void> _refreshTransactions({
     int? month,
     int? year,
     UserTeamsRow? player,
     bool overridePlayer = false,
   }) async {
-    final currentMonth =
-        _model.monthSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'month');
-    final currentYear =
-        _model.yearSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'year');
-    final selectedMonth = month ?? currentMonth;
-    final selectedYear = year ?? currentYear;
-    final selectedPlayer = overridePlayer ? player : (player ?? _model.whoSetup);
-    final playerId = selectedPlayer?.id;
-
-    _model.monthSetup = selectedMonth;
-    _model.yearSetup = selectedYear;
-    _model.whoSetup = selectedPlayer;
-
-    final transactions = await _transactionsRepository.fetchForPeriod(
+    await _model.transactionsFeedController.refresh(
       saisonId: FFAppState().saisonSetup,
-      month: selectedMonth,
-      year: selectedYear,
-      transactionToId: playerId,
+      monthOverride: month,
+      yearOverride: year,
+      player: player,
+      overridePlayer: overridePlayer,
     );
 
-    _model.monthTransactions = transactions.toList();
     safeSetState(() {});
   }
 

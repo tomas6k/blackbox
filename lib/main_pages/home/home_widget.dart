@@ -1229,7 +1229,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                   value));
 
                                                       if (_model
-                                                          .transactionChange!) {
+                                                              .transactionChange ==
+                                                          true) {
                                                         safeSetState(() {
                                                           FFAppState()
                                                               .clearUserSoldCache();

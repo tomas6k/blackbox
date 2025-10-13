@@ -4,7 +4,6 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/item/item_transaction/item_transaction_widget.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
-import '/custom_code/services/transactions_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -23,29 +22,17 @@ class _MyTransactionsWidgetState extends State<MyTransactionsWidget> {
   late MyTransactionsModel _model;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  final TransactionsRepository _transactionsRepository =
-      const TransactionsRepository();
-
   Future<void> _refreshTransactions({
     int? month,
     int? year,
   }) async {
-    final extractedMonth =
-        month ?? (_model.monthSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'month'));
-    final extractedYear =
-        year ?? (_model.yearSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'year'));
-
-    _model.monthSetup = extractedMonth;
-    _model.yearSetup = extractedYear;
-
-    final transactions = await _transactionsRepository.fetchForPeriod(
+    await _model.transactionsFeedController.refresh(
       saisonId: FFAppState().saisonSetup,
-      month: extractedMonth,
-      year: extractedYear,
+      monthOverride: month,
+      yearOverride: year,
       transactionToId: FFAppState().userSetup,
     );
 
-    _model.monthTransactions = transactions.toList();
     safeSetState(() {});
   }
 
