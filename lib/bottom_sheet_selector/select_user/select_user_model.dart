@@ -9,6 +9,7 @@ class SelectUserModel extends FlutterFlowModel<SelectUserWidget> {
   FocusNode? searchFocusNode;
   TextEditingController? searchTextController;
   String? Function(BuildContext, String?)? searchTextControllerValidator;
+  List<String> selectedUserIds = [];
 
   @override
   void initState(BuildContext context) {}

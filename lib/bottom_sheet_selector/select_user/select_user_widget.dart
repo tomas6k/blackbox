@@ -1,5 +1,6 @@
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:easy_debounce/easy_debounce.dart';
@@ -10,9 +11,16 @@ import 'select_user_model.dart';
 export 'select_user_model.dart';
 
 class SelectUserWidget extends StatefulWidget {
-  const SelectUserWidget({super.key, this.showAllOption = true});
+  const SelectUserWidget({
+    super.key,
+    this.showAllOption = true,
+    this.multiSelect = false,
+    this.initialSelection = const [],
+  });
 
   final bool showAllOption;
+  final bool multiSelect;
+  final List<String> initialSelection;
 
   @override
   State<SelectUserWidget> createState() => _SelectUserWidgetState();
@@ -34,6 +42,7 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
 
     _model.searchTextController ??= TextEditingController();
     _model.searchFocusNode ??= FocusNode();
+    _model.selectedUserIds = List<String>.from(widget.initialSelection);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -189,190 +198,291 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                   }
                   List<UserTeamsRow> listViewUserTeamsRowList = snapshot.data!;
 
-                  final hasAllOption = widget.showAllOption;
-                  return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(
-                      0,
-                      0,
-                      0,
-                      48.0,
-                    ),
-                    scrollDirection: Axis.vertical,
-                    itemCount: hasAllOption
-                        ? listViewUserTeamsRowList.length + 1
-                        : listViewUserTeamsRowList.length,
-                    itemBuilder: (context, listViewIndex) {
-                      if (hasAllOption && listViewIndex == 0) {
-                        return Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              16.0, 12.0, 16.0, 0.0),
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              Navigator.pop(context, 'all');
-                            },
-                            child: Material(
-                              color: Colors.transparent,
-                              elevation: 0.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0),
-                              ),
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  border: Border.all(
-                                    color: Colors.transparent,
-                                    width: 0.0,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      8.0, 8.0, 16.0, 8.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        child: Container(
-                                          width: 40.0,
-                                          height: 40.0,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryBackground,
-                                          child: Icon(
-                                            Icons.group_outlined,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primaryText,
-                                            size: 24.0,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  12.0, 0.0, 0.0, 0.0),
-                                          child: Text(
-                                            'Tout le monde',
-                                            maxLines: 1,
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyLarge
-                                                .override(
-                                                  fontFamily: 'Manrope',
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                      const FaIcon(
-                                        FontAwesomeIcons.chevronRight,
-                                        color: Color(0xFFBABABA),
-                                        size: 20.0,
-                                      ),
-                                    ].divide(const SizedBox(width: 12.0)),
-                                  ),
-                                ),
-                              ),
-                            ),
+                  final hasAllOption =
+                      widget.multiSelect ? false : widget.showAllOption;
+                  final selectedIds = _model.selectedUserIds;
+                  return Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(
+                            0,
+                            0,
+                            0,
+                            48.0,
                           ),
-                        );
-                      }
-
-                      final listViewUserTeamsRow =
-                          listViewUserTeamsRowList[hasAllOption
-                              ? listViewIndex - 1
-                              : listViewIndex];
-                      return Visibility(
-                        visible: functions.showSearchResult(
-                            _model.searchTextController.text,
-                            listViewUserTeamsRow.displayName!),
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.fromSTEB(
-                              16.0, 12.0, 16.0, 0.0),
-                          child: InkWell(
-                            splashColor: Colors.transparent,
-                            focusColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
-                            onTap: () async {
-                              Navigator.pop(context, listViewUserTeamsRow);
-                            },
-                            child: Material(
-                              color: Colors.transparent,
-                              elevation: 0.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.0),
-                              ),
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  border: Border.all(
+                          scrollDirection: Axis.vertical,
+                          itemCount: hasAllOption
+                              ? listViewUserTeamsRowList.length + 1
+                              : listViewUserTeamsRowList.length,
+                          itemBuilder: (context, listViewIndex) {
+                            if (hasAllOption && listViewIndex == 0) {
+                              return Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 12.0, 16.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    Navigator.pop(context, 'all');
+                                  },
+                                  child: Material(
                                     color: Colors.transparent,
-                                    width: 0.0,
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      8.0, 8.0, 16.0, 8.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      ClipRRect(
+                                    elevation: 0.0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
                                         borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        child: Image.network(
-                                          valueOrDefault<String>(
-                                            listViewUserTeamsRow.displayImg,
-                                            'https://dnrinnvsfrbmrlmcxiij.supabase.co/storage/v1/object/public/default/avatar.jpg',
-                                          ),
-                                          width: 40.0,
-                                          height: 40.0,
-                                          fit: BoxFit.cover,
+                                            BorderRadius.circular(16.0),
+                                        border: Border.all(
+                                          color: Colors.transparent,
+                                          width: 0.0,
                                         ),
                                       ),
-                                      Expanded(
-                                        child: Text(
-                                          valueOrDefault<String>(
-                                            listViewUserTeamsRow.displayName,
-                                            'Joueur inconnu',
-                                          ),
-                                          maxLines: 1,
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyLarge
-                                              .override(
-                                                fontFamily: 'Manrope',
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(8.0, 8.0, 16.0, 8.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                              child: Container(
+                                                width: 40.0,
+                                                height: 40.0,
                                                 color:
                                                     FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                letterSpacing: 0.0,
-                                                fontWeight: FontWeight.w500,
+                                                        .primaryBackground,
+                                                child: Icon(
+                                                  Icons.group_outlined,
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                  size: 24.0,
+                                                ),
                                               ),
+                                            ),
+                                            Expanded(
+                                              child: Padding(
+                                                padding: const EdgeInsetsDirectional
+                                                    .fromSTEB(
+                                                        12.0, 0.0, 0.0, 0.0),
+                                                child: Text(
+                                                  'Tout le monde',
+                                                  maxLines: 1,
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyLarge
+                                                      .override(
+                                                        fontFamily: 'Manrope',
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+                                            const FaIcon(
+                                              FontAwesomeIcons.chevronRight,
+                                              color: Color(0xFFBABABA),
+                                              size: 20.0,
+                                            ),
+                                          ].divide(const SizedBox(width: 12.0)),
                                         ),
                                       ),
-                                      const FaIcon(
-                                        FontAwesomeIcons.chevronRight,
-                                        color: Color(0xFFBABABA),
-                                        size: 20.0,
-                                      ),
-                                    ].divide(const SizedBox(width: 12.0)),
+                                    ),
                                   ),
                                 ),
+                              );
+                            }
+
+                            final listViewUserTeamsRow =
+                                listViewUserTeamsRowList[hasAllOption
+                                    ? listViewIndex - 1
+                                    : listViewIndex];
+                            final userId = listViewUserTeamsRow.id;
+                            final isSelected = widget.multiSelect &&
+                                selectedIds.contains(userId);
+                            return Visibility(
+                              visible: functions.showSearchResult(
+                                  _model.searchTextController.text,
+                                  listViewUserTeamsRow.displayName!),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 12.0, 16.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    if (widget.multiSelect) {
+                                      setState(() {
+                                        if (isSelected) {
+                                          _model.selectedUserIds
+                                              .remove(userId);
+                                        } else {
+                                          _model.selectedUserIds.add(userId);
+                                        }
+                                      });
+                                    } else {
+                                      Navigator.pop(
+                                          context, listViewUserTeamsRow);
+                                    }
+                                  },
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    elevation: 0.0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16.0),
+                                    ),
+                                    child: Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: isSelected
+                                            ? FlutterFlowTheme.of(context)
+                                                .primaryBackground
+                                            : FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                        borderRadius:
+                                            BorderRadius.circular(16.0),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? FlutterFlowTheme.of(context)
+                                                  .primary
+                                              : Colors.transparent,
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(8.0, 8.0, 16.0, 8.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                              child: Image.network(
+                                                valueOrDefault<String>(
+                                                  listViewUserTeamsRow
+                                                      .displayImg,
+                                                  'https://dnrinnvsfrbmrlmcxiij.supabase.co/storage/v1/object/public/default/avatar.jpg',
+                                                ),
+                                                width: 40.0,
+                                                height: 40.0,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                valueOrDefault<String>(
+                                                  listViewUserTeamsRow
+                                                      .displayName,
+                                                  'Joueur inconnu',
+                                                ),
+                                                maxLines: 1,
+                                                style:
+                                                    FlutterFlowTheme.of(context)
+                                                        .bodyLarge
+                                                        .override(
+                                                          fontFamily: 'Manrope',
+                                                          color:
+                                                              FlutterFlowTheme.of(
+                                                                      context)
+                                                                  .primaryText,
+                                                          letterSpacing: 0.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                              ),
+                                            ),
+                                            widget.multiSelect
+                                                ? Icon(
+                                                    isSelected
+                                                        ? Icons.check_circle
+                                                        : Icons
+                                                            .radio_button_unchecked,
+                                                    color: isSelected
+                                                        ? FlutterFlowTheme.of(
+                                                                context)
+                                                            .primary
+                                                        : const Color(
+                                                            0xFFBABABA),
+                                                    size: 24.0,
+                                                  )
+                                                : const FaIcon(
+                                                    FontAwesomeIcons
+                                                        .chevronRight,
+                                                    color: Color(0xFFBABABA),
+                                                    size: 20.0,
+                                                  ),
+                                          ].divide(const SizedBox(width: 12.0)),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      if (widget.multiSelect)
+                        SafeArea(
+                          top: false,
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                16.0, 0.0, 16.0, 16.0),
+                            child: FFButtonWidget(
+                              onPressed: selectedIds.isEmpty
+                                  ? null
+                                  : () async {
+                                      final chosenUsers =
+                                          listViewUserTeamsRowList.where(
+                                        (user) => selectedIds.contains(user.id),
+                                      );
+                                      Navigator.pop(
+                                        context,
+                                        chosenUsers.toList(),
+                                      );
+                                    },
+                              text: selectedIds.isEmpty
+                                  ? 'Valider'
+                                  : 'Valider (${selectedIds.length})',
+                              options: FFButtonOptions(
+                                width: double.infinity,
+                                height: 48.0,
+                                color: FlutterFlowTheme.of(context).primary,
+                                textStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .override(
+                                      fontFamily: 'Manrope',
+                                      color: Colors.white,
+                                      letterSpacing: 0.0,
+                                    ),
+                                elevation: 0.0,
+                                borderSide: const BorderSide(
+                                  color: Colors.transparent,
+                                  width: 1.0,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                                disabledColor: const Color(0x28000000),
+                                disabledTextColor: const Color(0x64000000),
                               ),
                             ),
                           ),
                         ),
-                      );
-                    },
+                    ],
                   );
                 },
               ),

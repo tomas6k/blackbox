@@ -18,6 +18,13 @@ class AddTransactionModel extends FlutterFlowModel<AddTransactionWidget> {
 
   String? targetUserID;
 
+  List<UserTeamsRow> selectedUsers = [];
+  List<String> get selectedUserIds => selectedUsers
+      .map((u) => u.id)
+      .whereType<String>()
+      .toSet()
+      .toList();
+
   String? targetPenalitieName;
 
   String? targetPenalitieImg;

@@ -52,6 +52,91 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
+  Widget _buildSelectedUserAvatarGroup(BuildContext context) {
+    if (_model.selectedUsers.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8.0),
+        child: Image.network(
+          valueOrDefault<String>(
+            _model.targetUserImg,
+            'https://dnrinnvsfrbmrlmcxiij.supabase.co/storage/v1/object/public/default/avatar.jpg',
+          ),
+          width: 40.0,
+          height: 40.0,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
+    final displayedUsers = _model.selectedUsers.take(3).toList();
+    final extraCount = _model.selectedUsers.length - displayedUsers.length;
+    final displayCount = displayedUsers.length + (extraCount > 0 ? 1 : 0);
+    final stackWidth =
+        displayCount > 0 ? 40.0 + 20.0 * (displayCount - 1) : 40.0;
+
+    return SizedBox(
+      width: stackWidth,
+      height: 40.0,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          for (var i = 0; i < displayedUsers.length; i++)
+            Positioned(
+              left: i * 20.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Image.network(
+                  valueOrDefault<String>(
+                    displayedUsers[i].displayImg,
+                    'https://dnrinnvsfrbmrlmcxiij.supabase.co/storage/v1/object/public/default/avatar.jpg',
+                  ),
+                  width: 40.0,
+                  height: 40.0,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          if (extraCount > 0)
+            Positioned(
+              left: displayedUsers.length * 20.0,
+              child: Container(
+                width: 40.0,
+                height: 40.0,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).primary,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '+$extraCount',
+                  maxLines: 1,
+                  style: FlutterFlowTheme.of(context).labelMedium.override(
+                        fontFamily: 'Manrope',
+                        color: Colors.white,
+                        letterSpacing: 0.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _selectedUsersLabel() {
+    if (_model.selectedUsers.isEmpty) {
+      return 'Choisis un joueur';
+    }
+    if (_model.selectedUsers.length == 1) {
+      return valueOrDefault<String>(
+        _model.selectedUsers.first.displayName,
+        'Joueur inconnu',
+      );
+    }
+    return '${_model.selectedUsers.length} joueurs sélectionnés';
+  }
+
   @override
   void dispose() {
     _model.dispose();
@@ -394,8 +479,10 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       height:
                                           MediaQuery.sizeOf(context).height *
                                               0.9,
-                                    child: const SelectUserWidget(
+                                    child: SelectUserWidget(
                                       showAllOption: false,
+                                      multiSelect: true,
+                                      initialSelection: _model.selectedUserIds,
                                     ),
                                     ),
                                   ),
@@ -407,17 +494,38 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                               return;
                             }
 
-                            if (selection is UserTeamsRow) {
-                              safeSetState(() => _model.userChoose = selection);
-                              _model.targetUserName =
-                                  _model.userChoose?.displayName;
-                              _model.targetUserImg =
-                                  _model.userChoose?.displayImg;
-                              _model.targetUserID = _model.userChoose?.id;
+                            if (selection is List<UserTeamsRow>) {
+                              final seen = <String>{};
+                              _model.selectedUsers.clear();
+                              for (final user in selection) {
+                                final userId = user.id;
+                                if (userId.isEmpty) {
+                                  continue;
+                                }
+                                if (seen.add(userId)) {
+                                  _model.selectedUsers.add(user);
+                                }
+                              }
+                              if (_model.selectedUsers.isNotEmpty) {
+                                final firstUser = _model.selectedUsers.first;
+                                _model.targetUserName = firstUser.displayName;
+                                _model.targetUserImg = firstUser.displayImg;
+                                _model.targetUserID = firstUser.id;
+                              } else {
+                                _model.targetUserName = null;
+                                _model.targetUserImg = null;
+                                _model.targetUserID = null;
+                              }
+                              safeSetState(() {});
+                            } else if (selection is UserTeamsRow) {
+                              _model.selectedUsers
+                                ..clear()
+                                ..add(selection);
+                              _model.targetUserName = selection.displayName;
+                              _model.targetUserImg = selection.displayImg;
+                              _model.targetUserID = selection.id;
                               safeSetState(() {});
                             }
-
-                            safeSetState(() {});
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -442,25 +550,11 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         Row(
                                           mainAxisSize: MainAxisSize.max,
                                           children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              child: Image.network(
-                                                valueOrDefault<String>(
-                                                  _model.targetUserImg,
-                                                  'https://dnrinnvsfrbmrlmcxiij.supabase.co/storage/v1/object/public/default/avatar.jpg',
-                                                ),
-                                                width: 40.0,
-                                                height: 40.0,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
+                                            _buildSelectedUserAvatarGroup(
+                                                context),
                                             Expanded(
                                               child: Text(
-                                                valueOrDefault<String>(
-                                                  _model.targetUserName,
-                                                  'Choisis un joueur',
-                                                ),
+                                                _selectedUsersLabel(),
                                                 maxLines: 1,
                                                 style:
                                                     FlutterFlowTheme.of(context)
@@ -858,8 +952,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                         if (_model.transactionType == 'default')
                           Expanded(
                             child: FFButtonWidget(
-                              onPressed: ((_model.targetUserID == null ||
-                                          _model.targetUserID == '') ||
+                              onPressed: (_model.selectedUsers.isEmpty ||
                                       (_model.targetPenalitieID == null ||
                                           _model.targetPenalitieID == ''))
                                   ? null
@@ -869,29 +962,40 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       final theme =
                                           FlutterFlowTheme.of(context);
 
-                                      _model.message =
-                                          await TransactionsTable().insert({
-                                        'transaction_date':
-                                            supaSerialize<DateTime>(
-                                                _model.date),
-                                        'transaction_value':
-                                            _model.transactionValue,
-                                        'created_by': FFAppState().userSetup,
-                                        'transaction_to': _model.targetUserID,
-                                        'penalitie_id':
-                                            _model.targetPenalitieID,
-                                        'saison_id': FFAppState().saisonSetup,
-                                        'note':
-                                            _model.noteFieldTextController.text,
-                                        'gameday': functions.getBoolValue(
-                                            'Gameday',
-                                            _model.typeValues?.toList()),
-                                        'blackweek': functions.getBoolValue(
-                                            'BlackWeek',
-                                            _model.typeValues?.toList()),
-                                        'transaction_amount':
-                                            _model.quantityValue?.toDouble(),
-                                      });
+                                      final validUsers = _model.selectedUsers
+                                          .where((user) => user.id.isNotEmpty)
+                                          .toList();
+                                      if (validUsers.isEmpty) {
+                                        return;
+                                      }
+                                      TransactionsRow? lastMessage;
+                                      for (final user in validUsers) {
+                                        lastMessage =
+                                            await TransactionsTable().insert({
+                                          'transaction_date':
+                                              supaSerialize<DateTime>(
+                                                  _model.date),
+                                          'transaction_value':
+                                              _model.transactionValue,
+                                          'created_by': FFAppState().userSetup,
+                                          'transaction_to': user.id,
+                                          'penalitie_id':
+                                              _model.targetPenalitieID,
+                                          'saison_id':
+                                              FFAppState().saisonSetup,
+                                          'note': _model
+                                              .noteFieldTextController.text,
+                                          'gameday': functions.getBoolValue(
+                                              'Gameday',
+                                              _model.typeValues?.toList()),
+                                          'blackweek': functions.getBoolValue(
+                                              'BlackWeek',
+                                              _model.typeValues?.toList()),
+                                          'transaction_amount':
+                                              _model.quantityValue?.toDouble(),
+                                        });
+                                      }
+                                      _model.message = lastMessage;
                                       if (!mounted) {
                                         return;
                                       }
@@ -907,6 +1011,10 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         _model.quantityValue = 1;
                                       });
                                       _model.transactionValue = 0.0;
+                                      _model.selectedUsers.clear();
+                                      _model.targetUserName = null;
+                                      _model.targetUserImg = null;
+                                      _model.targetUserID = null;
                                       _model.targetPenalitieName = null;
                                       _model.targetPenalitieImg = null;
                                       _model.targetPenalitieID = null;
@@ -960,8 +1068,7 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                         if (_model.transactionType == 'custom')
                           Expanded(
                             child: FFButtonWidget(
-                              onPressed: ((_model.targetUserID == null ||
-                                          _model.targetUserID == '') ||
+                              onPressed: (_model.selectedUsers.isEmpty ||
                                       ((_model.transactionVariableTextController
                                                   .text ==
                                               '') ||
@@ -975,31 +1082,42 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                       final theme =
                                           FlutterFlowTheme.of(context);
 
-                                      _model.message2 =
-                                          await TransactionsTable().insert({
-                                        'transaction_date':
-                                            supaSerialize<DateTime>(
-                                                _model.date),
-                                        'transaction_value': functions
-                                            .convertCommaDotNegative(_model
-                                                .transactionVariableTextController
-                                                .text),
-                                        'created_by': FFAppState().userSetup,
-                                        'transaction_to': _model.targetUserID,
-                                        'penalitie_id':
-                                            _model.targetPenalitieID,
-                                        'saison_id': FFAppState().saisonSetup,
-                                        'note':
-                                            _model.noteFieldTextController.text,
-                                        'gameday': functions.getBoolValue(
-                                            'Gameday',
-                                            _model.typeValues?.toList()),
-                                        'blackweek': functions.getBoolValue(
-                                            'BlackWeek',
-                                            _model.typeValues?.toList()),
-                                        'transaction_amount':
-                                            _model.quantityValue?.toDouble(),
-                                      });
+                                      final validUsers = _model.selectedUsers
+                                          .where((user) => user.id.isNotEmpty)
+                                          .toList();
+                                      if (validUsers.isEmpty) {
+                                        return;
+                                      }
+                                      TransactionsRow? lastMessage2;
+                                      for (final user in validUsers) {
+                                        lastMessage2 =
+                                            await TransactionsTable().insert({
+                                          'transaction_date':
+                                              supaSerialize<DateTime>(
+                                                  _model.date),
+                                          'transaction_value': functions
+                                              .convertCommaDotNegative(_model
+                                                  .transactionVariableTextController
+                                                  .text),
+                                          'created_by': FFAppState().userSetup,
+                                          'transaction_to': user.id,
+                                          'penalitie_id':
+                                              _model.targetPenalitieID,
+                                          'saison_id':
+                                              FFAppState().saisonSetup,
+                                          'note': _model
+                                              .noteFieldTextController.text,
+                                          'gameday': functions.getBoolValue(
+                                              'Gameday',
+                                              _model.typeValues?.toList()),
+                                          'blackweek': functions.getBoolValue(
+                                              'BlackWeek',
+                                              _model.typeValues?.toList()),
+                                          'transaction_amount':
+                                              _model.quantityValue?.toDouble(),
+                                        });
+                                      }
+                                      _model.message2 = lastMessage2;
                                       if (!mounted) {
                                         return;
                                       }
@@ -1015,6 +1133,10 @@ class _AddTransactionWidgetState extends State<AddTransactionWidget> {
                                         _model.quantityValue = 1;
                                       });
                                       _model.transactionValue = 0.0;
+                                      _model.selectedUsers.clear();
+                                      _model.targetUserName = null;
+                                      _model.targetUserImg = null;
+                                      _model.targetUserID = null;
                                       _model.targetPenalitieName = null;
                                       _model.targetPenalitieImg = null;
                                       _model.targetPenalitieID = null;
