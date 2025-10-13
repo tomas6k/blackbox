@@ -195,10 +195,93 @@ class _SelectUserWidgetState extends State<SelectUserWidget> {
                       48.0,
                     ),
                     scrollDirection: Axis.vertical,
-                    itemCount: listViewUserTeamsRowList.length,
+                    itemCount: listViewUserTeamsRowList.length + 1,
                     itemBuilder: (context, listViewIndex) {
+                      if (listViewIndex == 0) {
+                        return Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              16.0, 12.0, 16.0, 0.0),
+                          child: InkWell(
+                            splashColor: Colors.transparent,
+                            focusColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
+                            onTap: () async {
+                              Navigator.pop(context, 'all');
+                            },
+                            child: Material(
+                              color: Colors.transparent,
+                              elevation: 0.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                              ),
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryBackground,
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  border: Border.all(
+                                    color: Colors.transparent,
+                                    width: 0.0,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      8.0, 8.0, 16.0, 8.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        child: Container(
+                                          width: 40.0,
+                                          height: 40.0,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryBackground,
+                                          child: Icon(
+                                            Icons.group_outlined,
+                                            color: FlutterFlowTheme.of(context)
+                                                .primaryText,
+                                            size: 24.0,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  12.0, 0.0, 0.0, 0.0),
+                                          child: Text(
+                                            'Tout le monde',
+                                            maxLines: 1,
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyLarge
+                                                .override(
+                                                  fontFamily: 'Manrope',
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      const FaIcon(
+                                        FontAwesomeIcons.chevronRight,
+                                        color: Color(0xFFBABABA),
+                                        size: 20.0,
+                                      ),
+                                    ].divide(const SizedBox(width: 12.0)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
                       final listViewUserTeamsRow =
-                          listViewUserTeamsRowList[listViewIndex];
+                          listViewUserTeamsRowList[listViewIndex - 1];
                       return Visibility(
                         visible: functions.showSearchResult(
                             _model.searchTextController.text,

@@ -26,6 +26,67 @@ class _ActivityWidgetState extends State<ActivityWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  Future<void> _refreshTransactions({
+    int? month,
+    int? year,
+    UserTeamsRow? player,
+    bool overridePlayer = false,
+  }) async {
+    final currentMonth =
+        _model.monthSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'month');
+    final currentYear =
+        _model.yearSetup ?? functions.extractDateDetails(getCurrentTimestamp, 'year');
+    final selectedMonth = month ?? currentMonth;
+    final selectedYear = year ?? currentYear;
+    final selectedPlayer = overridePlayer ? player : (player ?? _model.whoSetup);
+    final playerId = selectedPlayer?.id;
+
+    _model.monthSetup = selectedMonth;
+    _model.yearSetup = selectedYear;
+    _model.whoSetup = selectedPlayer;
+
+    final startDate =
+        functions.getBoundaryDate(selectedMonth, selectedYear, 'first');
+    final endDate =
+        functions.getBoundaryDate(selectedMonth, selectedYear, 'end');
+
+    final transactions = await TransactionsTable().queryRows(
+      queryFn: (q) {
+        var query = q
+            .eq(
+              'saison_id',
+              FFAppState().saisonSetup,
+            )
+            .eq(
+              'statut',
+              1.0,
+            )
+            .gte(
+              'transaction_date',
+              supaSerialize<DateTime>(startDate),
+            )
+            .lte(
+              'transaction_date',
+              supaSerialize<DateTime>(endDate),
+            );
+
+        if ((playerId != null) && playerId.isNotEmpty) {
+          query = query.eq(
+            'transaction_to',
+            playerId,
+          );
+        }
+
+        return query.order('transaction_date');
+      },
+    );
+
+    _model.transactionsMonth = transactions;
+    _model.monthTransactions =
+        transactions.toList().cast<TransactionsRow>();
+    safeSetState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,36 +94,10 @@ class _ActivityWidgetState extends State<ActivityWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      _model.monthSetup =
-          functions.extractDateDetails(getCurrentTimestamp, 'month');
-      _model.yearSetup =
-          functions.extractDateDetails(getCurrentTimestamp, 'year');
-      safeSetState(() {});
-      _model.transactionsMonth = await TransactionsTable().queryRows(
-        queryFn: (q) => q
-            .eq(
-              'saison_id',
-              FFAppState().saisonSetup,
-            )
-            .gte(
-              'transaction_date',
-              supaSerialize<DateTime>(functions.getBoundaryDate(
-                  _model.monthSetup, _model.yearSetup, 'first')),
-            )
-            .eq(
-              'statut',
-              1.0,
-            )
-            .lte(
-              'transaction_date',
-              supaSerialize<DateTime>(functions.getBoundaryDate(
-                  _model.monthSetup, _model.yearSetup, 'end')),
-            )
-            .order('transaction_date'),
+      await _refreshTransactions(
+        month: functions.extractDateDetails(getCurrentTimestamp, 'month'),
+        year: functions.extractDateDetails(getCurrentTimestamp, 'year'),
       );
-      _model.monthTransactions =
-          _model.transactionsMonth!.toList().cast<TransactionsRow>();
-      safeSetState(() {});
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -136,54 +171,12 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                           ).then((value) => safeSetState(
                               () => _model.buttomSheetFilterDate2 = value));
 
-                          _model.monthSetup =
-                              _model.buttomSheetFilterDate2?.month;
-                          _model.yearSetup =
-                              _model.buttomSheetFilterDate2?.year;
-                          safeSetState(() {});
-                          _model.transactionsMonth2 =
-                              await TransactionsTable().queryRows(
-                            queryFn: (q) => q
-                                .eq(
-                                  'saison_id',
-                                  FFAppState().saisonSetup,
-                                )
-                                .gte(
-                                  'transaction_date',
-                                  supaSerialize<DateTime>(
-                                      functions.getBoundaryDate(
-                                          _model.monthSetup,
-                                          _model.yearSetup,
-                                          'first')),
-                                )
-                                .eq(
-                                  'statut',
-                                  1.0,
-                                )
-                                .lte(
-                                  'transaction_date',
-                                  supaSerialize<DateTime>(
-                                      functions.getBoundaryDate(
-                                          _model.monthSetup,
-                                          _model.yearSetup,
-                                          'end')),
-                                )
-                                .order('transaction_date'),
-                          );
-                          _model.monthTransactions = _model.transactionsMonth2!
-                              .toList()
-                              .cast<TransactionsRow>();
-                          safeSetState(() {});
-                          if ((_model.monthSetup == null) ||
-                              (_model.yearSetup == null)) {
-                            _model.monthSetup = functions.extractDateDetails(
-                                getCurrentTimestamp, 'month');
-                            _model.yearSetup = functions.extractDateDetails(
-                                getCurrentTimestamp, 'year');
-                            safeSetState(() {});
+                          if (_model.buttomSheetFilterDate2 != null) {
+                            await _refreshTransactions(
+                              month: _model.buttomSheetFilterDate2?.month,
+                              year: _model.buttomSheetFilterDate2?.year,
+                            );
                           }
-
-                          safeSetState(() {});
                         },
                         child: Container(
                           height: 36.0,
@@ -254,7 +247,7 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                         hoverColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () async {
-                          await showModalBottomSheet(
+                          final selection = await showModalBottomSheet(
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
                             enableDrag: false,
@@ -272,49 +265,25 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                                 ),
                               );
                             },
-                          ).then((value) =>
-                              safeSetState(() => _model.whoPlayer = value));
-
-                          _model.transactionsMonth3 =
-                              await TransactionsTable().queryRows(
-                            queryFn: (q) => q
-                                .eq(
-                                  'saison_id',
-                                  FFAppState().saisonSetup,
-                                )
-                                .gte(
-                                  'transaction_date',
-                                  supaSerialize<DateTime>(
-                                      functions.getBoundaryDate(
-                                          _model.monthSetup,
-                                          _model.yearSetup,
-                                          'first')),
-                                )
-                                .eq(
-                                  'statut',
-                                  1.0,
-                                )
-                                .lte(
-                                  'transaction_date',
-                                  supaSerialize<DateTime>(
-                                      functions.getBoundaryDate(
-                                          _model.monthSetup,
-                                          _model.yearSetup,
-                                          'end')),
-                                )
-                                .eq(
-                                  'transaction_to',
-                                  _model.whoPlayer?.id,
-                                )
-                                .order('transaction_date'),
                           );
-                          _model.monthTransactions = _model.transactionsMonth3!
-                              .toList()
-                              .cast<TransactionsRow>();
-                          _model.whoSetup = _model.whoPlayer;
-                          safeSetState(() {});
 
-                          safeSetState(() {});
+                          if (!mounted) {
+                            return;
+                          }
+
+                          if (selection is UserTeamsRow) {
+                            safeSetState(() => _model.whoPlayer = selection);
+                            await _refreshTransactions(
+                              player: selection,
+                              overridePlayer: true,
+                            );
+                          } else if (selection is String && selection == 'all') {
+                            safeSetState(() => _model.whoPlayer = null);
+                            await _refreshTransactions(
+                              player: null,
+                              overridePlayer: true,
+                            );
+                          }
                         },
                         child: Container(
                           height: 36.0,
@@ -336,9 +305,9 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                                     valueOrDefault<String>(
                                       _model.whoSetup?.id == null ||
                                               _model.whoSetup?.id == ''
-                                          ? 'Joueurs'
+                                          ? 'Tout le monde'
                                           : _model.whoSetup?.displayName,
-                                      'Joueurs',
+                                      'Tout le monde',
                                     ),
                                     style: FlutterFlowTheme.of(context)
                                         .titleSmall
@@ -511,43 +480,14 @@ class _ActivityWidgetState extends State<ActivityWidget> {
                                         );
                                       },
                                     ).then((value) => safeSetState(() => _model
-                                        .transactionChangeinActivity = value));
+                                        .transactionChangeinActivity =
+                                            value ?? false));
 
-                                    if (_model.transactionChangeinActivity!) {
+                                    if (_model.transactionChangeinActivity ??
+                                        false) {
+                                      await _refreshTransactions();
                                       _model.transactionsMonth4 =
-                                          await TransactionsTable().queryRows(
-                                        queryFn: (q) => q
-                                            .eq(
-                                              'saison_id',
-                                              FFAppState().saisonSetup,
-                                            )
-                                            .gte(
-                                              'transaction_date',
-                                              supaSerialize<DateTime>(
-                                                  functions.getBoundaryDate(
-                                                      _model.monthSetup,
-                                                      _model.yearSetup,
-                                                      'first')),
-                                            )
-                                            .eq(
-                                              'statut',
-                                              1.0,
-                                            )
-                                            .lte(
-                                              'transaction_date',
-                                              supaSerialize<DateTime>(
-                                                  functions.getBoundaryDate(
-                                                      _model.monthSetup,
-                                                      _model.yearSetup,
-                                                      'end')),
-                                            )
-                                            .order('transaction_date'),
-                                      );
-                                      _model.monthTransactions = _model
-                                          .transactionsMonth!
-                                          .toList()
-                                          .cast<TransactionsRow>();
-                                      safeSetState(() {});
+                                          _model.transactionsMonth;
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
