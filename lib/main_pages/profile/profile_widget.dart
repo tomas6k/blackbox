@@ -1,5 +1,4 @@
 import '/auth/supabase_auth/auth_util.dart';
-import '/backend/firebase/firebase_messaging_service.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -7,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:blackbox/notifiers/push_preferences_notifier.dart';
 import 'profile_model.dart';
 export 'profile_model.dart';
 
@@ -41,12 +41,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     BuildContext context,
     bool enable,
   ) async {
-    final appState = FFAppState();
+    final pushPrefs = context.read<PushPreferencesNotifier>();
 
     if (enable) {
-      final granted = await FirebaseMessagingService.enableNotifications();
+      final granted = await pushPrefs.setEnabled(true);
       if (!granted) {
-        final message = FirebaseMessagingService.pluginAvailable
+        final message = pushPrefs.pluginAvailable
             ? 'Autorisez les notifications dans Réglages pour les activer.'
             : 'Redémarrez complètement l’application après installation pour activer les notifications.';
         if (mounted) {
@@ -57,14 +57,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ),
           );
         }
-        appState.update(() {
-          appState.notificationsEnabled = false;
-        });
         return;
       }
-      appState.update(() {
-        appState.notificationsEnabled = true;
-      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -74,10 +68,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         );
       }
     } else {
-      await FirebaseMessagingService.disableNotifications();
-      appState.update(() {
-        appState.notificationsEnabled = false;
-      });
+      await pushPrefs.setEnabled(false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -92,6 +83,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+    final pushPrefs = context.watch<PushPreferencesNotifier>();
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -207,7 +199,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 width: double.infinity,
                 height: 60.0,
                 decoration: BoxDecoration(
-                  color: FFAppState().notificationsEnabled
+                  color: pushPrefs.enabled
                       ? FlutterFlowTheme.of(context).secondary
                       : FlutterFlowTheme.of(context).secondaryBackground,
                   boxShadow: const [
@@ -259,10 +251,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                               supportedPlatforms.contains(
                                 defaultTargetPlatform,
                               ) &&
-                              FirebaseMessagingService.pluginAvailable;
+                              pushPrefs.pluginAvailable;
                           return Switch.adaptive(
                             value: notificationsSupported
-                                ? FFAppState().notificationsEnabled
+                                ? pushPrefs.enabled
                                 : false,
                             onChanged: notificationsSupported
                                 ? (value) async {
@@ -296,8 +288,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 hoverColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () async {
-                  await FirebaseMessagingService.disableNotifications();
-                  FFAppState().notificationsEnabled = false;
+                  await context
+                      .read<PushPreferencesNotifier>()
+                      .setEnabled(false);
                   FFAppState().clearTeamInfoCache();
                   FFAppState().clearDashboardTransactionCache();
                   FFAppState().clearPenalitiesDefaultCache();
@@ -325,7 +318,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   width: double.infinity,
                   height: 60.0,
                   decoration: BoxDecoration(
-                    color: FFAppState().notificationsEnabled
+                    color: pushPrefs.enabled
                         ? FlutterFlowTheme.of(context).secondary
                         : FlutterFlowTheme.of(context).secondaryBackground,
                     boxShadow: const [

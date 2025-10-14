@@ -14,6 +14,7 @@ import '/backend/supabase/supabase.dart';
 import 'app_state.dart';
 import 'backend/firebase/firebase_config.dart';
 import 'backend/firebase/firebase_messaging_service.dart';
+import 'notifiers/push_preferences_notifier.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 import 'flutter_flow/internationalization.dart';
@@ -31,22 +32,23 @@ void main() async {
   }
 
   await initFirebase();
-  await SupaFlow.initialize();
   await appState.initializePersistedState();
-  final notificationsGranted = await FirebaseMessagingService.initialize(
-    enabled: appState.notificationsEnabled,
-  );
-  if (appState.notificationsEnabled && !notificationsGranted) {
-    appState.notificationsEnabled = false;
-  }
+  await SupaFlow.initialize();
 
   // Start final custom actions code
   await actions.lockOrientation();
   // await actions.onesignalInitialise();
   // End final custom actions code
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => appState,
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<FFAppState>.value(
+        value: appState,
+      ),
+      ChangeNotifierProvider<PushPreferencesNotifier>(
+        create: (_) => PushPreferencesNotifier(appState),
+      ),
+    ],
     child: const MyApp(),
   ));
 }
