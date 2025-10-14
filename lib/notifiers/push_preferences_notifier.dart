@@ -4,18 +4,30 @@ import '../app_state.dart';
 import '../backend/firebase/push_notification_controller.dart';
 
 class PushPreferencesNotifier extends ChangeNotifier {
-  PushPreferencesNotifier(
-    this._appState, {
+  PushPreferencesNotifier({
+    required bool initialEnabled,
+    required ValueChanged<bool> onPersist,
     PushNotificationsGateway? gateway,
-  }) : _gateway = gateway ?? PushNotificationController.instance {
-    _enabled = _appState.notificationsEnabled;
+  })  : _enabled = initialEnabled,
+        _persist = onPersist,
+        _gateway = gateway ?? PushNotificationController.instance {
     Future.microtask(_bootstrap);
   }
 
-  final FFAppState _appState;
-  final PushNotificationsGateway _gateway;
+  factory PushPreferencesNotifier.fromAppState(FFAppState appState) {
+    return PushPreferencesNotifier(
+      initialEnabled: appState.notificationsEnabled,
+      onPersist: (value) => appState.update(() {
+        appState.notificationsEnabled = value;
+      }),
+      gateway: PushNotificationController.instance,
+    );
+  }
 
-  bool _enabled = true;
+  final PushNotificationsGateway _gateway;
+  final ValueChanged<bool> _persist;
+
+  bool _enabled;
   bool get enabled => _enabled;
 
   bool get pluginAvailable => _gateway.pluginAvailable;
@@ -47,9 +59,7 @@ class PushPreferencesNotifier extends ChangeNotifier {
 
   void _updateState(bool value) {
     _enabled = value;
-    _appState.update(() {
-      _appState.notificationsEnabled = value;
-    });
+    _persist(value);
     notifyListeners();
   }
 }
