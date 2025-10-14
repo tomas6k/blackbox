@@ -31,6 +31,7 @@ void main() async {
   }
 
   await initFirebase();
+  await SupaFlow.initialize();
   await appState.initializePersistedState();
   final notificationsGranted = await FirebaseMessagingService.initialize(
     enabled: appState.notificationsEnabled,
@@ -38,8 +39,6 @@ void main() async {
   if (appState.notificationsEnabled && !notificationsGranted) {
     appState.notificationsEnabled = false;
   }
-
-  await SupaFlow.initialize();
 
   // Start final custom actions code
   await actions.lockOrientation();

@@ -38,3 +38,4 @@ fastlane/test_output/
 
 # Others
 AGENTS.md
+supabase_dumps/

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'firebase_config.dart';
 
@@ -25,6 +27,7 @@ class FirebaseMessagingService {
 
     if (!enabled || !_pluginAvailable) {
       await _cancelTokenRefresh();
+      await _disableStoredTokens();
       return false;
     }
 
@@ -32,6 +35,7 @@ class FirebaseMessagingService {
     if (!granted) {
       await _messaging.setAutoInitEnabled(false);
       await _cancelTokenRefresh();
+      await _disableStoredTokens();
     }
     return granted;
   }
@@ -39,12 +43,14 @@ class FirebaseMessagingService {
   static Future<bool> enableNotifications() async {
     final autoInitSet = await _setAutoInitEnabled(true);
     if (!autoInitSet || !_pluginAvailable) {
+      await _disableStoredTokens();
       return false;
     }
     _attachListeners();
     final granted = await _ensurePermissionsAndToken();
     if (!granted) {
       await _setAutoInitEnabled(false);
+      await _disableStoredTokens();
     }
     return granted;
   }
@@ -52,12 +58,15 @@ class FirebaseMessagingService {
   static Future<void> disableNotifications() async {
     await _setAutoInitEnabled(false);
     if (!_pluginAvailable) {
+      await _disableStoredTokens();
       return;
     }
     await _cancelTokenRefresh();
     try {
+      final existingToken = await _messaging.getToken();
       await _messaging.deleteToken();
       debugPrint('FCM token deleted');
+      await _disableStoredTokens(token: existingToken);
     } catch (error) {
       debugPrint('Unable to delete FCM token: $error');
     }
@@ -118,11 +127,13 @@ class FirebaseMessagingService {
     final token = await _messaging.getToken();
     if (token != null) {
       debugPrint('FCM token: $token');
+      await _syncToken(token: token, enabled: true);
     }
 
     _tokenRefreshSubscription ??=
-        _messaging.onTokenRefresh.listen((String newToken) {
+        _messaging.onTokenRefresh.listen((String newToken) async {
       debugPrint('FCM token refreshed: $newToken');
+      await _syncToken(token: newToken, enabled: true);
     });
 
     return true;
@@ -157,4 +168,71 @@ class FirebaseMessagingService {
           defaultTargetPlatform == TargetPlatform.android);
 
   static bool get pluginAvailable => _pluginAvailable;
+
+  static SupabaseClient get _supabase => Supabase.instance.client;
+
+  static String get _currentPlatformLabel {
+    if (kIsWeb) {
+      return 'web';
+    }
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return 'android';
+      case TargetPlatform.iOS:
+        return 'ios';
+      default:
+        return 'unknown';
+    }
+  }
+
+  static Future<void> _syncToken({
+    required String token,
+    required bool enabled,
+  }) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) {
+      return;
+    }
+    final localeTag = WidgetsBinding.instance.platformDispatcher.locale;
+    final payload = {
+      'user_id': user.id,
+      'token': token,
+      'platform': _currentPlatformLabel,
+      'enabled': enabled,
+      'locale': localeTag != null ? localeTag.toLanguageTag() : null,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+    try {
+      await _supabase
+          .from('user_push_tokens')
+          .upsert(payload, onConflict: 'token');
+    } catch (error) {
+      debugPrint('Failed to sync push token: $error');
+    }
+  }
+
+  static Future<void> _disableStoredTokens({String? token}) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) {
+      return;
+    }
+    final updatePayload = {
+      'enabled': false,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+    try {
+      var query = _supabase.from('user_push_tokens').update(updatePayload).eq(
+            'user_id',
+            user.id,
+          );
+      if (token != null) {
+        query = query.eq('token', token);
+      } else {
+        query = query.eq('platform', _currentPlatformLabel);
+      }
+      await query;
+    } catch (error) {
+      debugPrint('Failed to disable stored push tokens: $error');
+    }
+  }
 }

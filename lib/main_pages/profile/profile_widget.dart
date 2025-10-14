@@ -294,6 +294,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 hoverColor: Colors.transparent,
                 highlightColor: Colors.transparent,
                 onTap: () async {
+                  await FirebaseMessagingService.disableNotifications();
+                  FFAppState().notificationsEnabled = false;
                   FFAppState().clearTeamInfoCache();
                   FFAppState().clearDashboardTransactionCache();
                   FFAppState().clearPenalitiesDefaultCache();
