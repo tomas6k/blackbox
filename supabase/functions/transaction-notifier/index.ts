@@ -230,11 +230,13 @@ async function dispatchFcmMessage(
     }
   }
 
+  const notification = prepareNotification(payload);
+
   if (fcmServiceAccount) {
-    return await dispatchFcmMessagesV1(tokens, payload);
+    return await dispatchFcmMessagesV1(tokens, notification);
   }
 
-  return await dispatchFcmLegacy(tokens, payload);
+  return await dispatchFcmLegacy(tokens, notification);
 }
 
 function truncateError(message: string | null, max = 500) {
@@ -251,9 +253,64 @@ function jsonResponse(data: unknown, status = 200) {
   });
 }
 
+function prepareNotification(payload: NotificationJob['payload']): PreparedNotification {
+  const data = sanitizeData(stripInternalData(payload.data ?? {}));
+
+  const amountCandidate = (payload.data ?? ({} as Record<string, unknown>)) as Record<string, unknown>;
+  const amountSources = [
+    amountCandidate['computed_amount'],
+    amountCandidate['penalty_value'],
+    amountCandidate['transaction_value'],
+    amountCandidate['transaction_amount'],
+  ];
+
+  let amount = Number.NaN;
+  for (const source of amountSources) {
+    if (source === undefined || source === null || source === '') {
+      continue;
+    }
+    const numeric = typeof source === 'number' ? source : parseFloat(String(source).replace(',', '.'));
+    if (!Number.isNaN(numeric) && Number.isFinite(numeric)) {
+      amount = Math.abs(numeric);
+      break;
+    }
+  }
+
+  const labelRaw = (payload.data as Record<string, unknown> | undefined)?.['transaction_name'];
+  const label = typeof labelRaw === 'string' && labelRaw.trim().length > 0 ? labelRaw : 'Transaction';
+  const formattedAmount = !Number.isNaN(amount) && Number.isFinite(amount) && amount > 0
+    ? formatEuro(amount)
+    : null;
+
+  const body = formattedAmount
+    ? `${label} → - ${formattedAmount} €`
+    : payload.body ?? `${label}`;
+
+  const title = payload.title ?? 'Merci pour la Blackbox 🙏';
+
+  return {
+    title,
+    body,
+    data,
+  };
+}
+
+function formatEuro(value: number): string {
+  return new Intl.NumberFormat('fr-FR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+type PreparedNotification = {
+  title: string;
+  body: string;
+  data: Record<string, string>;
+};
+
 async function dispatchFcmLegacy(
   tokens: string[],
-  payload: NotificationJob['payload'],
+  notification: PreparedNotification,
 ) {
   if (!fcmServerKey) {
     return {
@@ -266,10 +323,10 @@ async function dispatchFcmLegacy(
   const notificationBody = {
     registration_ids: tokens,
     notification: {
-      title: payload.title ?? 'Nouvelle transaction',
-      body: payload.body ?? '',
+      title: notification.title,
+      body: notification.body,
     },
-    data: sanitizeData(sanitizeData(payload.data ?? {})),
+    data: notification.data,
   };
 
   const response = await fetch('https://fcm.googleapis.com/fcm/send', {
@@ -311,7 +368,7 @@ async function dispatchFcmLegacy(
 
 async function dispatchFcmMessagesV1(
   tokens: string[],
-  payload: NotificationJob['payload'],
+  notification: PreparedNotification,
 ) {
   if (!fcmServiceAccount) {
     return {
@@ -339,10 +396,10 @@ async function dispatchFcmMessagesV1(
       message: {
         token: registrationToken,
         notification: {
-          title: payload.title ?? 'Nouvelle transaction',
-          body: payload.body ?? '',
+          title: notification.title,
+          body: notification.body,
         },
-        data: sanitizeData(sanitizeData(payload.data ?? {})),
+        data: notification.data,
       },
     };
 
