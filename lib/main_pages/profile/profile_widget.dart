@@ -5,6 +5,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:blackbox/notifiers/push_preferences_notifier.dart';
 import 'profile_model.dart';
@@ -42,6 +43,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     bool enable,
   ) async {
     final pushPrefs = context.read<PushPreferencesNotifier>();
+    await HapticFeedback.selectionClick();
 
     if (enable) {
       final granted = await pushPrefs.setEnabled(true);
@@ -72,8 +74,14 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Notifications désactivées.'),
-            backgroundColor: FlutterFlowTheme.of(context).secondary,
+            content: Text(
+              'Notifications désactivées.',
+              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                    fontFamily: 'Manrope',
+                    color: FlutterFlowTheme.of(context).primaryText,
+                  ),
+            ),
+            backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
           ),
         );
       }
@@ -199,9 +207,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 width: double.infinity,
                 height: 60.0,
                 decoration: BoxDecoration(
-                  color: pushPrefs.enabled
-                      ? FlutterFlowTheme.of(context).secondary
-                      : FlutterFlowTheme.of(context).secondaryBackground,
+                  color: FlutterFlowTheme.of(context).secondaryBackground,
                   boxShadow: const [
                     BoxShadow(
                       blurRadius: 3.0,
@@ -252,6 +258,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                 defaultTargetPlatform,
                               ) &&
                               pushPrefs.pluginAvailable;
+                          final isCupertino =
+                              defaultTargetPlatform == TargetPlatform.iOS;
                           return Switch.adaptive(
                             value: notificationsSupported
                                 ? pushPrefs.enabled
@@ -264,9 +272,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                     );
                                   }
                                 : null,
-                            activeColor: FlutterFlowTheme.of(context).primary,
+                            activeColor: isCupertino
+                                ? FlutterFlowTheme.of(context).warning
+                                : FlutterFlowTheme.of(context)
+                                    .primaryBackground,
                             activeTrackColor:
-                                FlutterFlowTheme.of(context).secondary,
+                                FlutterFlowTheme.of(context).warning,
                             inactiveTrackColor:
                                 FlutterFlowTheme.of(context).alternate,
                             inactiveThumbColor:
@@ -318,9 +329,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   width: double.infinity,
                   height: 60.0,
                   decoration: BoxDecoration(
-                    color: pushPrefs.enabled
-                        ? FlutterFlowTheme.of(context).secondary
-                        : FlutterFlowTheme.of(context).secondaryBackground,
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
                     boxShadow: const [
                       BoxShadow(
                         blurRadius: 3.0,
