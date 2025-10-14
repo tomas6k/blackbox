@@ -207,7 +207,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 width: double.infinity,
                 height: 60.0,
                 decoration: BoxDecoration(
-                  color: FlutterFlowTheme.of(context).secondaryBackground,
+                  color: FFAppState().notificationsEnabled
+                      ? FlutterFlowTheme.of(context).secondary
+                      : FlutterFlowTheme.of(context).secondaryBackground,
                   boxShadow: const [
                     BoxShadow(
                       blurRadius: 3.0,
@@ -272,7 +274,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                 : null,
                             activeColor: FlutterFlowTheme.of(context).primary,
                             activeTrackColor:
-                                FlutterFlowTheme.of(context).primaryBackground,
+                                FlutterFlowTheme.of(context).secondary,
                             inactiveTrackColor:
                                 FlutterFlowTheme.of(context).alternate,
                             inactiveThumbColor:
@@ -323,7 +325,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                   width: double.infinity,
                   height: 60.0,
                   decoration: BoxDecoration(
-                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    color: FFAppState().notificationsEnabled
+                        ? FlutterFlowTheme.of(context).secondary
+                        : FlutterFlowTheme.of(context).secondaryBackground,
                     boxShadow: const [
                       BoxShadow(
                         blurRadius: 3.0,
