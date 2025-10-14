@@ -46,7 +46,7 @@ void main() async {
         value: appState,
       ),
       ChangeNotifierProvider<PushPreferencesNotifier>(
-        create: (_) => PushPreferencesNotifier(appState),
+        create: (_) => PushPreferencesNotifier.fromAppState(appState),
       ),
     ],
     child: const MyApp(),
