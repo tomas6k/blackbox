@@ -131,11 +131,18 @@ serve(async (req) => {
         await disableTokens(fcmResult.invalidTokens);
       }
 
-      await markJob(job.id, {
-        status: 'sent',
-        error: null,
-        processed_at: new Date().toISOString(),
-      });
+      await markJob(
+        job.id,
+        {
+          status: 'sent',
+          error: null,
+          processed_at: new Date().toISOString(),
+        },
+        {
+          ...payload,
+          body: notification.body,
+        },
+      );
       summary.sent += 1;
     } catch (error) {
       console.error('Unexpected error while processing job', job.id, error);
@@ -193,6 +200,7 @@ async function markJob(
     processed_at?: string | null;
     next_attempt_at?: string | null;
   },
+  payloadOverride?: NotificationJob['payload'],
 ) {
   const payload: Record<string, unknown> = {
     status: values.status,
@@ -203,6 +211,9 @@ async function markJob(
   }
   if (values.next_attempt_at !== undefined) {
     payload.next_attempt_at = values.next_attempt_at;
+  }
+  if (payloadOverride) {
+    payload.payload = payloadOverride;
   }
 
   const { error } = await supabase
