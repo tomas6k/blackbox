@@ -143,7 +143,7 @@ serve(async (req) => {
           user_id: payload.user_id,
           title: notification.title,
           body: notification.body,
-          data: stripInternalData(payload.data ?? {}),
+          data: payload.data ?? {},
         },
       );
       summary.sent += 1;
@@ -570,9 +570,3 @@ function sanitizeData(value: Record<string, unknown>): Record<string, string> {
   return result;
 }
 
-function stripInternalData(value: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = { ...value };
-  delete result.computed_amount;
-  delete result.penalty_value;
-  return result;
-}
