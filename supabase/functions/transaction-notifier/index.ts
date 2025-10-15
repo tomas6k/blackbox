@@ -268,7 +268,7 @@ function jsonResponse(data: unknown, status = 200) {
 }
 
 function prepareNotification(payload: NotificationJob['payload']): PreparedNotification {
-  const data = sanitizeData(stripInternalData(payload.data ?? {}));
+  const data = sanitizeData(payload.data ?? {});
 
   const amountCandidate = (payload.data ?? ({} as Record<string, unknown>)) as Record<string, unknown>;
   const amountSources = [
