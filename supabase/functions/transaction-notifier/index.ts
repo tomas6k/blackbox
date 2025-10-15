@@ -289,13 +289,12 @@ function prepareNotification(payload: NotificationJob['payload']): PreparedNotif
 
   const labelRaw = (payload.data as Record<string, unknown> | undefined)?.['transaction_name'];
   const label = typeof labelRaw === 'string' && labelRaw.trim().length > 0 ? labelRaw : 'Transaction';
-  const formattedAmount = !Number.isNaN(amount) && Number.isFinite(amount) && amount > 0
-    ? formatEuro(amount)
-    : null;
+  const normalizedAmount = !Number.isNaN(amount) && Number.isFinite(amount)
+    ? amount
+    : 0;
+  const formattedAmount = formatEuro(Math.abs(normalizedAmount));
 
-  const body = formattedAmount
-    ? `${label} → - ${formattedAmount} €`
-    : payload.body ?? `${label}`;
+  const body = `${label} → - ${formattedAmount} €`;
 
   const title = payload.title ?? 'Merci pour la Blackbox 🙏';
 
