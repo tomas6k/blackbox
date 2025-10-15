@@ -51,6 +51,31 @@ class FFAppState extends ChangeNotifier {
         _notificationsEnabled = storedNotificationsEnabled;
       }
     });
+    await _safeInitAsync(() async {
+      final storedNotificationPrompted =
+          await secureStorage.getBool('ff_notificationPermissionRequested');
+      if (storedNotificationPrompted != null) {
+        _notificationPermissionRequested = storedNotificationPrompted;
+      }
+    });
+    await _safeInitAsync(() async {
+      final storedNotificationPromptLastShown =
+          await secureStorage.getString('ff_notificationPromptLastShown');
+      if (storedNotificationPromptLastShown != null &&
+          storedNotificationPromptLastShown.isNotEmpty) {
+        _notificationPromptLastShown =
+            DateTime.tryParse(storedNotificationPromptLastShown);
+      }
+    });
+    await _safeInitAsync(() async {
+      if (!_notificationsEnabled && _notificationPermissionRequested) {
+        _notificationPermissionRequested = false;
+        await secureStorage.setBool(
+          'ff_notificationPermissionRequested',
+          false,
+        );
+      }
+    });
   }
 
   void update(VoidCallback callback) {
@@ -104,11 +129,41 @@ class FFAppState extends ChangeNotifier {
     secureStorage.delete(key: 'ff_roleSetup');
   }
 
-  bool _notificationsEnabled = true;
+  bool _notificationsEnabled = false;
   bool get notificationsEnabled => _notificationsEnabled;
   set notificationsEnabled(bool value) {
     _notificationsEnabled = value;
     secureStorage.setBool('ff_notificationsEnabled', value);
+    if (value) {
+      if (!_notificationPermissionRequested) {
+        _notificationPermissionRequested = true;
+        secureStorage.setBool('ff_notificationPermissionRequested', true);
+      }
+    } else if (_notificationPermissionRequested) {
+      _notificationPermissionRequested = false;
+      secureStorage.setBool('ff_notificationPermissionRequested', false);
+    }
+  }
+
+  bool _notificationPermissionRequested = false;
+  bool get notificationPermissionRequested => _notificationPermissionRequested;
+  set notificationPermissionRequested(bool value) {
+    _notificationPermissionRequested = value;
+    secureStorage.setBool('ff_notificationPermissionRequested', value);
+  }
+
+  DateTime? _notificationPromptLastShown;
+  DateTime? get notificationPromptLastShown => _notificationPromptLastShown;
+  set notificationPromptLastShown(DateTime? value) {
+    _notificationPromptLastShown = value;
+    if (value == null) {
+      secureStorage.delete(key: 'ff_notificationPromptLastShown');
+    } else {
+      secureStorage.setString(
+        'ff_notificationPromptLastShown',
+        value.toIso8601String(),
+      );
+    }
   }
 
   List<dynamic> _teamSoldQuerry = [];

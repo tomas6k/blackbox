@@ -2,12 +2,14 @@ import '/auth/supabase_auth/auth_util.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/app_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:blackbox/notifiers/push_preferences_notifier.dart';
+import '/main_pages/notifications/notification_permission_widget.dart';
 import 'profile_model.dart';
 export 'profile_model.dart';
 
@@ -43,25 +45,22 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     bool enable,
   ) async {
     final pushPrefs = context.read<PushPreferencesNotifier>();
+    final appState = FFAppState();
     await HapticFeedback.selectionClick();
 
     if (enable) {
-      final granted = await pushPrefs.setEnabled(true);
-      if (!granted) {
-        final message = pushPrefs.pluginAvailable
-            ? 'Autorisez les notifications dans Réglages pour les activer.'
-            : 'Redémarrez complètement l’application après installation pour activer les notifications.';
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: FlutterFlowTheme.of(context).error,
-            ),
-          );
-        }
+      appState.update(() {
+        appState.notificationPromptLastShown = DateTime.now();
+      });
+
+      final granted =
+          await NotificationPermissionWidget.requestPermission(context);
+
+      if (!mounted) {
         return;
       }
-      if (mounted) {
+
+      if (granted || pushPrefs.enabled) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Notifications activées.'),
@@ -69,6 +68,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           ),
         );
       }
+      if (mounted) {
+        safeSetState(() {});
+      }
+      return;
     } else {
       await pushPrefs.setEnabled(false);
       if (mounted) {

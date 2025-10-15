@@ -9,6 +9,7 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import '/item/item_transaction/item_transaction_widget.dart';
 import '/backend/schema/structs/index.dart';
 import '/flutter_flow/custom_functions.dart' as functions;
+import '/main_pages/notifications/notification_permission_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:blackbox/notifiers/push_preferences_notifier.dart';
 import 'home_model.dart';
 export 'home_model.dart';
 
@@ -32,6 +34,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   final animationsMap = <String, AnimationInfo>{};
+  PushPreferencesNotifier? _pushPrefsListener;
+  bool _presentingNotificationPrompt = false;
+  bool _promptCheckScheduled = false;
 
   @override
   void initState() {
@@ -58,6 +63,9 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
         FFAppState().deleteRoleSetup();
         FFAppState().roleSetup = '';
       }
+    });
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _scheduleNotificationPromptCheck();
     });
 
     animationsMap.addAll({
@@ -87,9 +95,17 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _pushPrefsListener?.removeListener(_handlePushPrefsChanged);
     _model.dispose();
 
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _attachPushPrefsListener();
+    _scheduleNotificationPromptCheck();
   }
 
   @override
@@ -1418,5 +1434,85 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  void _attachPushPrefsListener() {
+    final pushPrefs = context.read<PushPreferencesNotifier>();
+    if (_pushPrefsListener == pushPrefs) {
+      return;
+    }
+    _pushPrefsListener?.removeListener(_handlePushPrefsChanged);
+    _pushPrefsListener = pushPrefs;
+    _pushPrefsListener!.addListener(_handlePushPrefsChanged);
+  }
+
+  void _handlePushPrefsChanged() {
+    if (!mounted) {
+      return;
+    }
+    if (!(_pushPrefsListener?.enabled ?? true)) {
+      _scheduleNotificationPromptCheck();
+    }
+  }
+
+  void _scheduleNotificationPromptCheck() {
+    if (_promptCheckScheduled || !mounted) {
+      return;
+    }
+    _promptCheckScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _promptCheckScheduled = false;
+      if (!mounted) {
+        return;
+      }
+      await _maybePromptForNotifications();
+    });
+  }
+
+  Future<void> _maybePromptForNotifications() async {
+    if (_presentingNotificationPrompt || !mounted) {
+      return;
+    }
+    final appState = FFAppState();
+    final pushPrefs = context.read<PushPreferencesNotifier>();
+    if (pushPrefs.enabled) {
+      return;
+    }
+    if (appState.notificationPermissionRequested) {
+      return;
+    }
+    final lastShown = appState.notificationPromptLastShown;
+    final now = DateTime.now();
+    if (lastShown != null &&
+        now.difference(lastShown) < const Duration(seconds: 10)) {
+      return;
+    }
+    if (!pushPrefs.pluginAvailable) {
+      appState.update(() {
+        appState.notificationPromptLastShown = now;
+      });
+      return;
+    }
+
+    appState.update(() {
+      appState.notificationPromptLastShown = now;
+    });
+
+    _presentingNotificationPrompt = true;
+    await NotificationPermissionWidget.show(context);
+
+    if (!mounted) {
+      return;
+    }
+
+    _presentingNotificationPrompt = false;
+
+    final refreshedState = FFAppState();
+    final refreshedPrefs = context.read<PushPreferencesNotifier>();
+
+    if (!refreshedPrefs.enabled &&
+        !refreshedState.notificationPermissionRequested) {
+      _scheduleNotificationPromptCheck();
+    }
   }
 }
