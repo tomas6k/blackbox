@@ -4,7 +4,9 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/item/item_player/item_player_widget.dart';
 import '/shimmer/shimmer_test/shimmer_test_widget.dart';
+import 'player_permissions_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'team_model.dart';
 export 'team_model.dart';
@@ -52,14 +54,15 @@ class _TeamWidgetState extends State<TeamWidget> {
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(20.0, 0.0, 20.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                      20.0, 0.0, 20.0, 0.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding:
-                            const EdgeInsetsDirectional.fromSTEB(0.0, 4.0, 0.0, 0.0),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            0.0, 4.0, 0.0, 0.0),
                         child: Text(
                           'Mon équipe',
                           style: FlutterFlowTheme.of(context)
@@ -92,13 +95,11 @@ class _TeamWidgetState extends State<TeamWidget> {
 
                             return Builder(
                               builder: (context) {
-                                final teamItems =
-                                    getJsonField(
-                                          listViewGetSoldResponse.jsonBody,
-                                          r'''$''',
-                                          true,
-                                        )
-                                        as List?;
+                                final teamItems = getJsonField(
+                                  listViewGetSoldResponse.jsonBody,
+                                  r'''$''',
+                                  true,
+                                ) as List?;
                                 final teamList = teamItems == null
                                     ? <GetSoldStruct>[]
                                     : teamItems
@@ -140,7 +141,7 @@ class _TeamWidgetState extends State<TeamWidget> {
                                     itemBuilder: (context, teamListIndex) {
                                       final teamListItem =
                                           teamList[teamListIndex];
-                                      return ItemPlayerWidget(
+                                      final playerTile = ItemPlayerWidget(
                                         key: Key(
                                             'Key1ig_${teamListIndex}_of_${teamList.length}'),
                                         primary: valueOrDefault<String>(
@@ -159,6 +160,46 @@ class _TeamWidgetState extends State<TeamWidget> {
                                           teamListItem.userImg,
                                           'https://dnrinnvsfrbmrlmcxiij.supabase.co/storage/v1/object/public/default/avatar.jpg',
                                         ),
+                                      );
+                                      final isOwner =
+                                          FFAppState().roleSetup == 'owner';
+                                      final userTeamId = teamListItem.userId;
+                                      if (!isOwner || userTeamId.isEmpty) {
+                                        return playerTile;
+                                      }
+                                      return InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          HapticFeedback.selectionClick();
+                                          await showModalBottomSheet(
+                                            isScrollControlled: true,
+                                            backgroundColor: Colors.transparent,
+                                            context: context,
+                                            builder: (context) {
+                                              return GestureDetector(
+                                                onTap: () =>
+                                                    FocusScope.of(context)
+                                                        .unfocus(),
+                                                child: Padding(
+                                                  padding:
+                                                      MediaQuery.viewInsetsOf(
+                                                          context),
+                                                  child: PlayerPermissionsSheet(
+                                                    userTeamId: userTeamId,
+                                                    displayName:
+                                                        valueOrDefault<String>(
+                                                      teamListItem.userName,
+                                                      'Joueur',
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: playerTile,
                                       );
                                     },
                                   ),
