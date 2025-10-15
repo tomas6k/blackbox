@@ -139,8 +139,11 @@ serve(async (req) => {
           processed_at: new Date().toISOString(),
         },
         {
-          ...payload,
+          transaction_id: payload.transaction_id,
+          user_id: payload.user_id,
+          title: notification.title,
           body: notification.body,
+          data: stripInternalData(payload.data ?? {}),
         },
       );
       summary.sent += 1;
