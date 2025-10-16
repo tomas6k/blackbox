@@ -29,6 +29,19 @@ export function prepareNotification(payload: NotificationJobPayload): PreparedNo
     title,
     body,
     data: sanitizedData,
+    android: {
+      notification: {
+        sound: 'notification',
+        channelId: 'blackbox_notifications',
+      },
+    },
+    apns: {
+      payload: {
+        aps: {
+          sound: 'notification.caf',
+        },
+      },
+    },
   };
 }
 

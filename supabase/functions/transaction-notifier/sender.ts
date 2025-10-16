@@ -55,6 +55,7 @@ export class FcmDispatcher {
       notification: {
         title: notification.title,
         body: notification.body,
+        sound: 'notification.wav',
       },
       data: notification.data,
     };
@@ -126,7 +127,7 @@ export class FcmDispatcher {
     const errors: string[] = [];
 
     for (const registrationToken of tokens) {
-      const messagePayload = {
+      const messagePayload: Record<string, unknown> = {
         message: {
           token: registrationToken,
           notification: {
@@ -136,6 +137,14 @@ export class FcmDispatcher {
           data: notification.data,
         },
       };
+
+      if (notification.android) {
+        (messagePayload.message as Record<string, unknown>).android = notification.android;
+      }
+
+      if (notification.apns) {
+        (messagePayload.message as Record<string, unknown>).apns = notification.apns;
+      }
 
       const response = await fetch(
         `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`,

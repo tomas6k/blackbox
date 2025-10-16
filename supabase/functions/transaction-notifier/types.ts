@@ -41,6 +41,19 @@ export type PreparedNotification = {
   title: string;
   body: string;
   data: Record<string, string>;
+  android?: {
+    notification?: {
+      sound?: string;
+      channelId?: string;
+    };
+  };
+  apns?: {
+    payload?: {
+      aps?: {
+        sound?: string;
+      };
+    };
+  };
 };
 
 export type DispatchResult = {

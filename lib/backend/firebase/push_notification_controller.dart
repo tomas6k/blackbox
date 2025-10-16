@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 typedef _LocaleResolver = Locale Function();
@@ -32,7 +33,9 @@ class PushNotificationController implements PushNotificationsGateway {
         _tokenRepository =
             tokenRepository ?? PushTokenRepository(Supabase.instance.client),
         _localeResolver =
-            localeResolver ?? PushNotificationController._defaultLocaleResolver;
+            localeResolver ?? PushNotificationController._defaultLocaleResolver {
+    _initializeLocalNotifications();
+  }
 
   static final PushNotificationController instance =
       PushNotificationController._();
@@ -41,13 +44,57 @@ class PushNotificationController implements PushNotificationsGateway {
   final PushPermissionManager _permissionManager;
   final PushTokenRepository _tokenRepository;
   final _LocaleResolver _localeResolver;
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
   StreamSubscription<String>? _tokenRefreshSubscription;
   bool _listenersAttached = false;
   bool _pluginAvailable = true;
+  int _notificationId = 0;
 
   static Locale _defaultLocaleResolver() =>
       WidgetsBinding.instance.platformDispatcher.locale;
+
+  Future<void> _initializeLocalNotifications() async {
+    if (!_supportsNativeMessaging) {
+      return;
+    }
+
+    const androidSettings = AndroidInitializationSettings('@mipmap/launcher_icon');
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+
+    const initSettings = InitializationSettings(
+      android: androidSettings,
+      iOS: iosSettings,
+    );
+
+    try {
+      await _localNotifications.initialize(initSettings);
+
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        const androidChannel = AndroidNotificationChannel(
+          'blackbox_notifications',
+          'Blackbox Notifications',
+          description: 'Notifications for Blackbox transactions and penalties',
+          importance: Importance.high,
+          sound: RawResourceAndroidNotificationSound('notification'),
+          enableVibration: true,
+          enableLights: true,
+        );
+
+        await _localNotifications
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.createNotificationChannel(androidChannel);
+      }
+    } catch (error) {
+      debugPrint('Failed to initialize local notifications: $error');
+    }
+  }
 
   @override
   bool get pluginAvailable => _pluginAvailable;
@@ -157,10 +204,12 @@ class PushNotificationController implements PushNotificationsGateway {
       return;
     }
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint(
         'Foreground message received: ${message.messageId ?? 'no-id'} ${message.notification?.title ?? ''}',
       );
+
+      await _showForegroundNotification(message);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -168,6 +217,53 @@ class PushNotificationController implements PushNotificationsGateway {
     });
 
     _listenersAttached = true;
+  }
+
+  Future<void> _showForegroundNotification(RemoteMessage message) async {
+    final notification = message.notification;
+    if (notification == null) {
+      return;
+    }
+
+    try {
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        await _localNotifications.show(
+          _notificationId++,
+          notification.title,
+          notification.body,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'blackbox_notifications',
+              'Blackbox Notifications',
+              channelDescription: 'Notifications for Blackbox transactions and penalties',
+              importance: Importance.high,
+              priority: Priority.high,
+              sound: RawResourceAndroidNotificationSound('notification'),
+              enableVibration: true,
+              enableLights: true,
+            ),
+          ),
+          payload: message.data.toString(),
+        );
+      } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+        await _localNotifications.show(
+          _notificationId++,
+          notification.title,
+          notification.body,
+          const NotificationDetails(
+            iOS: DarwinNotificationDetails(
+              sound: 'notification.caf',
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
+            ),
+          ),
+          payload: message.data.toString(),
+        );
+      }
+    } catch (error) {
+      debugPrint('Failed to show foreground notification: $error');
+    }
   }
 
   Future<void> _cancelTokenRefresh() async {
